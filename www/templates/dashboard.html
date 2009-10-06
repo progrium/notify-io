@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul>
+  <li class="first"><a href="/dashboard">Home</a></li>
+  <li><a href="/dashboard/history">History</a></li>
+  <li><a href="/dashboard/sources">Sources</a></li>
+  <li><a href="/dashboard/notifiers">Notifiers</a></li>
+  <li><a href="/dashboard/settings">Settings</a></li>
+</ul>
+{% block dashboard %}{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'dashboard.html' %}
+{% block dashboard %}
+<fieldset>
+  <legend>API Information</legend>
+Email hash: {{ account.hash }} <br />
+API key: {{ account.api_key }}
+</fieldset>
+<br />
+<fieldset>
+  <legend>Sender Settings</legend>
+  <input type="checkbox" /> Yes, I want to send notifications with this account<br />
+  Sender Name: <input type="text" name="name" /><br />
+  Sender Icon: <input type="file" name="file" /><br />
+  <input type="button" value="Save" />
+</fieldset>
+
+{% endblock %}

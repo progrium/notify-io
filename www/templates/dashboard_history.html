@@ -1,0 +1,9 @@
+{% extends 'dashboard.html' %}
+{% block dashboard %}
+<h3>Notification History</h3>
+<ul>
+  {% for notice in notifications %}
+  <li>{{ notice.hash }} - {{ notice.text }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

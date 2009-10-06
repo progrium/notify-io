@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>notify.io</title>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">
+        <h1>notify.io</h1>
+      </div>
+      <div id="content">
+        <div style="float: right;">
+          {% if user %}
+          {{ user.nickname }} | <a href="{{ logout_url }}">Logout</a>
+          {% else %}
+          Not logged in. <a href="{{ login_url }}">Login or Register?</a>
+          {% endif %}
+        </div>
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </body>
+</html>

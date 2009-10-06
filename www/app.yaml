@@ -1,0 +1,10 @@
+application: notify-io
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /dashboard.*
+  script: dashboard.py
+- url: .*
+  script: main.py

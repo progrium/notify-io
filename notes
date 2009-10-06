@@ -1,0 +1,65 @@
+GET api.notify.io/v1/listen/:userhash
+    *auth: user/pass
+    
+POST api.notify.io/v1/notify/:userhash
+    title
+    message
+    icon
+    link
+    api_key
+    
+
+iteration 3:
+ -ui notify approval?
+  -setting for name
+  -change log to a filter (only post if 200)
+  -send backlog notices (requires using api without logging...) -- replay? (needs key still)
+  
+Account
+
+Channel
+ user
+ status
+ source
+ created
+ updated
+ 
+
+Notifier
+ name
+ platform
+
+Growl
+Growl for Windows
+Snarl
+Prowl
+Mumbles
+Twitter Account
+Twitter DM
+WebHook
+  
+DASHBOARD
+Home
+ -pending approvals
+ -recent notifications
+ -client download
+History
+ -log
+Sources
+ -websites
+ -...
+Notifiers
+ -growl
+ -webhook
+ -...
+Settings
+ -source?
+  -source name
+  -default icon
+ -api key
+ 
+ 
+start with single "notification" from "notify.io" application
+next, try "notification" from each source with "notify.io" as application
+maybe try, each source has "notifications" and are registered as separate applications
+
