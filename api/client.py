@@ -54,6 +54,6 @@ class CometFactory(HTTPClientFactory):
     protocol = CometStream
 
 log.startLogging(sys.stdout)
-f = CometFactory('http://localhost:8191/listen?hash=55502f40dc8b7c769880b10874abc9d0')
+f = CometFactory('http://localhost:8191/listen/55502f40dc8b7c769880b10874abc9d0')
 reactor.connectTCP('localhost', 8191, f)
 reactor.run()

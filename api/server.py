@@ -60,8 +60,8 @@ class ListenResource(Resource):
     isLeaf = True
     
     def render_GET(self, request):
-        hash = request.args.get('hash', [None])[0]
-        if not hash:
+        hash = request.path.split('/')[-1]
+        if not hash or hash == 'listen':
             return "No hash"
         if not hash in listeners:
             listeners[hash] = []
