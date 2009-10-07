@@ -47,6 +47,8 @@ class CometStream(HTTPClient):
         
     def connectionMade(self):
         self.sendCommand('GET', self.factory.path)
+        self.sendHeader('Host', 'api.notify.io')
+        self.sendHeader('User-Agent', self.factory.agent)
         self.endHeaders()
         print "Connected and receiving..."
 
