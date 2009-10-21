@@ -6,12 +6,13 @@ Email hash: {{ account.hash }} <br />
 API key: {{ account.api_key }}
 </fieldset>
 <br />
+<form method="post">
 <fieldset>
-  <legend>Sender Settings</legend>
-  <input type="checkbox" /> Yes, I want to send notifications with this account<br />
-  Sender Name: <input type="text" name="name" /><br />
-  Sender Icon: <input type="file" name="file" /><br />
-  <input type="button" value="Save" />
+  <legend>Source Settings</legend>
+  <input type="checkbox" value="true" name="source_enabled" {% if account.source_enabled %}checked="checked"{% endif %}/> Yes, I want to send notifications with this account<br />
+  Sender Name: <input type="text" name="source_name" {% if account.source_name %}value="{{account.source_name}}" {% endif %}/><br />
+  Sender Icon URL: <input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/><br />
+  <input type="submit" value="Save" />
 </fieldset>
-
+</form>
 {% endblock %}

@@ -28,6 +28,18 @@ class SettingsHandler(webapp.RequestHandler):
         logout_url = users.create_logout_url('/')
         account = Account.all().filter('user =', user).get()
         self.response.out.write(template.render('templates/dashboard_settings.html', locals()))
+    
+    def post(self):
+        user = users.get_current_user()
+        account = Account.all().filter('user =', user).get()
+        if self.request.get('source_enabled', None):
+            account.source_enabled = True
+            account.source_name = self.request.get('source_name', None)
+            account.source_icon = self.request.get('source_icon', None)
+        else:
+            account.source_enabled = False
+        account.put()
+        self.redirect('/dashboard/settings')
 
 class HistoryHandler(webapp.RequestHandler):
     @login_required
