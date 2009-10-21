@@ -22,16 +22,16 @@ class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     hash = db.StringProperty()
     api_key = db.StringProperty()
-    notifier_name = db.StringProperty()
-    notifier_icon = db.BlobProperty()
+    source_enabled = db.BooleanProperty()
+    source_name = db.StringProperty()
+    source_icon = db.StringProperty()
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.get('user')
-        if user:
-            kwargs['hash'] = hashlib.md5(user.email()).hexdigest()
-        kwargs['api_key'] = kwargs.get('api_key', baseN(abs(hash(time.time())), 36))
-        super(Account, self).__init__(*args, **kwargs)
+    #def __init__(self, *args, **kwargs):
+    #    super(Account, self).__init__(*args, **kwargs)
 
+    def set_hash_and_key(self):
+        self.hash = hashlib.md5(self.user.email()).hexdigest()
+        self.api_key = ''.join([baseN(abs(hash(time.time())), 36), baseN(abs(hash(self.hash)), 36)])
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -63,8 +63,23 @@ class DownloadHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(template.render('templates/client.py', locals()))
 
+class ListenAuthHandler(webapp.RequestHandler):
+    def get(self):
+        api_key = self.request.get('api_key')
+        userhash = self.request.get('hash')
+        account = Account.all().filter('hash =', userhash).filter('api_key =', api_key).get()
+        if account:
+            self.response.out.write("ok")
+        else:
+            self.error(403)
+
 def main():
-    application = webapp.WSGIApplication([('/', MainHandler), ('/log', LogHandler), ('/download/notifyio-client.py', DownloadHandler)], debug=True)
+    application = webapp.WSGIApplication([
+        ('/', MainHandler), 
+        ('/log', LogHandler), 
+        ('/download/notifyio-client.py', DownloadHandler),
+        ('/auth', ListenAuthHandler),
+        ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
 

@@ -25,23 +25,23 @@ class Queue(DeferredQueue):
             self.get().addCallback(f)
         self.get().addCallback(f)
 
-class RootResource(Resource):
+class ContainerResource(Resource):
     isLeaf = False
-    
-    @classmethod
-    def setup(cls):
-        r = cls()
-        r.putChild('listen', ListenResource())
-        r.putChild('notify', NotifyResource())
-        return r
-    
+    def __init__(self, **kwargs):
+        Resource.__init__(self)
+        for key in kwargs:
+            self.putChild(key, kwargs[key])
+
 
 class NotifyResource(Resource):
-    isLead = True
+    isLeaf = True
+
+    def render_GET(self, request):
+        return "Method not allowed"
     
     def render_POST(self, request):
-        hash = request.args.get('hash', [None])[0]
-        if not hash:
+        hash = request.path.split('/')[-1]
+        if not hash or hash == 'notify':
             return "No hash"
         if not hash in listeners:
             listeners[hash] = []
@@ -61,8 +61,19 @@ class ListenResource(Resource):
     
     def render_GET(self, request):
         hash = request.path.split('/')[-1]
+        api_key = request.args.get('api_key', [None])[0]
         if not hash or hash == 'listen':
             return "No hash"
+        if not api_key:
+            return "No api key"
+            
+        client.getPage(url='%s/auth?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key)) \
+            .addCallback(self.start_stream, hash, request) \
+            .addErrback(self.write_error, request)
+        
+        return server.NOT_DONE_YET
+        
+    def start_stream(self, whatever, hash=None, request=None):    
         if not hash in listeners:
             listeners[hash] = []
         request.queue = Queue(lambda m: self._send(request, m))
@@ -71,7 +82,11 @@ class ListenResource(Resource):
         request.setHeader('Content-Type', 'application/json')
         request.setHeader('Transfer-Encoding', 'chunked')
         request.notifyFinish().addBoth(self._finished, hash, request)
-        return server.NOT_DONE_YET
+    
+    def write_error(self, failure, request):
+        request.write(str(failure))
+        request.finish()
+
     
     def _finished(self, whatever, hash=None, request=None):
         listeners[hash].remove(request)
@@ -80,5 +95,10 @@ class ListenResource(Resource):
         request.write("%s\n" % message)
 
 log.startLogging(sys.stdout)
-reactor.listenTCP(8191, Site(RootResource.setup()))
+reactor.listenTCP(8191, Site(ContainerResource(
+    v1=ContainerResource(
+        listen=ListenResource(),
+        notify=NotifyResource()
+    )
+)))
 reactor.run()

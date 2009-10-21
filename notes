@@ -1,5 +1,4 @@
-GET api.notify.io/v1/listen/:userhash
-    *auth: user/pass
+GET api.notify.io/v1/listen/:userhash?api_key=flwos7
     
 POST api.notify.io/v1/notify/:userhash
     title
@@ -9,12 +8,11 @@ POST api.notify.io/v1/notify/:userhash
     api_key
     
 
-iteration 3:
- -ui notify approval?
-  -setting for name
-  -change log to a filter (only post if 200)
-  -send backlog notices (requires using api without logging...) -- replay? (needs key still)
-  
+-enable, name, icon settings
+-authenticate notify
+-channels
+-sending backlog / replay
+
 Account
 
 Channel

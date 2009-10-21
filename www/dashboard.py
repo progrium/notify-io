@@ -17,6 +17,7 @@ class DashboardHandler(webapp.RequestHandler):
         account = Account.all().filter('user =', user).get()
         if not account:
             account = Account()
+            account.set_hash_and_key()
             account.put()
         self.response.out.write(template.render('templates/dashboard_home.html', locals()))
 
