@@ -6,6 +6,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
+from django.utils import simplejson
 
 def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
@@ -16,7 +17,15 @@ class Notification(db.Model):
     text = db.TextProperty(required=True)
     link = db.StringProperty()
     icon = db.StringProperty()
-    sticky = db.BooleanProperty()
+    sticky = db.StringProperty()
+    
+    def to_json(self):
+        o = {'text': self.text}
+        for arg in ['title', 'link', 'icon', 'sticky']:
+            value = getattr(self, arg)
+            if value:
+                o[arg] = value
+        return simplejson.dumps(o)
 
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
@@ -43,15 +52,22 @@ class MainHandler(webapp.RequestHandler):
             login_url = users.create_login_url('/')
         self.response.out.write(template.render('templates/main.html', locals()))
 
-class LogHandler(webapp.RequestHandler):
+class NotificationHandler(webapp.RequestHandler):
     def post(self):
-        notice = Notification(hash=self.request.get('hash'), text=self.request.get('text'))
-        for arg in ['text', 'link', 'icon', 'sticky']:
-            value = self.request.get(arg, None)
-            if value:
-                setattr(notice, arg, value)
-        notice.put()
-        self.response.out.write("ok")
+        api_key = self.request.get('api_key')
+        userhash = self.request.get('hash')
+        target = Account.all().filter('hash =', userhash).get()
+        source = Account.all().filter('api_key =', api_key).get()
+        if source and target:
+            notice = Notification(hash=userhash, text=self.request.get('text'), icon=source.source_icon)
+            for arg in ['title', 'link', 'icon', 'sticky']:
+                value = self.request.get(arg, None)
+                if value:
+                    setattr(notice, arg, value)
+            notice.put()
+            self.response.out.write(notice.to_json())
+        else:
+            self.error(403)
 
 class DownloadHandler(webapp.RequestHandler):
     @login_required
@@ -60,6 +76,7 @@ class DownloadHandler(webapp.RequestHandler):
         account = Account.all().filter('user =', user).get()
         host = 'api.notify.io'
         hash = account.hash
+        api_key = account.api_key
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(template.render('templates/client.py', locals()))
 
@@ -76,7 +93,7 @@ class ListenAuthHandler(webapp.RequestHandler):
 def main():
     application = webapp.WSGIApplication([
         ('/', MainHandler), 
-        ('/log', LogHandler), 
+        ('/notification', NotificationHandler), 
         ('/download/notifyio-client.py', DownloadHandler),
         ('/auth', ListenAuthHandler),
         ], debug=True)

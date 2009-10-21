@@ -43,6 +43,10 @@ class NotifyResource(Resource):
         hash = request.path.split('/')[-1]
         if not hash or hash == 'notify':
             return "No hash"
+        api_key = request.args.get('api_key', [None])[0]
+        if not api_key:
+            return "No api key"
+            
         if not hash in listeners:
             listeners[hash] = []
         
@@ -51,19 +55,31 @@ class NotifyResource(Resource):
             value = request.args.get(arg, [None])[0]
             if value:
                 notification[arg] = value
+
+        client.getPage(url='%s/notification?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key), method='POST', postdata=urllib.urlencode(notification)) \
+            .addCallback(self.notify_success, hash, request) \
+            .addErrback(self.notify_failure, request)
+            
+        return server.NOT_DONE_YET
+
+    def notify_success(self, page_contents, hash, request):
         for listener in listeners[hash]:
-            listener.queue.put(simplejson.dumps(notification))
-        client.getPage(url='%s/log?hash=%s' % (NOTIFY_WWW, hash), method='POST', postdata=urllib.urlencode(notification))
-        return "ok"
+            listener.queue.put(page_contents)
+        request.write("OK\n")
+        request.finish()
+    
+    def notify_failure(self, failure, request):
+        request.write(str(failure))
+        request.finish()
 
 class ListenResource(Resource):
     isLeaf = True
     
     def render_GET(self, request):
         hash = request.path.split('/')[-1]
-        api_key = request.args.get('api_key', [None])[0]
         if not hash or hash == 'listen':
             return "No hash"
+        api_key = request.args.get('api_key', [None])[0]
         if not api_key:
             return "No api key"
             

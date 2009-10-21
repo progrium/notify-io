@@ -8,8 +8,6 @@ POST api.notify.io/v1/notify/:userhash
     api_key
     
 
--enable, name, icon settings
--authenticate notify
 -channels
 -sending backlog / replay
 
