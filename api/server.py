@@ -40,7 +40,7 @@ class NotifyResource(Resource):
         return "Method not allowed"
     
     def render_POST(self, request):
-        hash = request.path.split('/')[-1]
+        hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'notify':
             return "No hash"
         api_key = request.args.get('api_key', [None])[0]
@@ -86,7 +86,7 @@ class ListenResource(Resource):
     isLeaf = True
     
     def render_GET(self, request):
-        hash = request.path.split('/')[-1]
+        hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'listen':
             return "No hash"
         api_key = request.args.get('api_key', [None])[0]
