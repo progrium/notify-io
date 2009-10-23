@@ -50,16 +50,23 @@ class NotifyResource(Resource):
         if not hash in listeners:
             listeners[hash] = []
         
-        notification = {}
-        for arg in ['title', 'text', 'icon', 'link', 'sticky']:
-            value = request.args.get(arg, [None])[0]
-            if value:
-                notification[arg] = value
-
-        client.getPage(url='%s/notification?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key), method='POST', postdata=urllib.urlencode(notification)) \
-            .addCallback(self.notify_success, hash, request) \
-            .addErrback(self.notify_failure, request)
+        replay = request.args.get('replay', [None])[0]
+        if replay:
+            client.getPage(url='%s/notification?hash=%s&api_key=%s&replay=%s' % (NOTIFY_WWW, hash, api_key, replay), method='POST') \
+                .addCallback(self.notify_success, hash, request) \
+                .addErrback(self.notify_failure, request)
+                
+        else:
+            notification = {}
+            for arg in ['title', 'text', 'icon', 'link', 'sticky']:
+                value = request.args.get(arg, [None])[0]
+                if value:
+                    notification[arg] = value
             
+            client.getPage(url='%s/notification?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key), method='POST', postdata=urllib.urlencode(notification)) \
+                .addCallback(self.notify_success, hash, request) \
+                .addErrback(self.notify_failure, request)
+                
         return server.NOT_DONE_YET
 
     def notify_success(self, page_contents, hash, request):

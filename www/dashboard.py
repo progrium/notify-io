@@ -48,7 +48,7 @@ class HistoryHandler(webapp.RequestHandler):
         user = users.get_current_user()
         logout_url = users.create_logout_url('/')
         account = Account.all().filter('user =', user).get()
-        notifications = Notification.all().filter('account =', account)
+        notifications = Notification.all().filter('target =', account).order('-created')
         self.response.out.write(template.render('templates/dashboard_history.html', locals()))
 
 class SourcesHandler(webapp.RequestHandler):

@@ -9,10 +9,6 @@ POST api.notify.io/v1/notify/:userhash
     
 
 -channels
- -create on first notify
- -list in sources
- -approval
- -sending backlog / replay
  -better looking history
  -email notifications
  -better docs/instructions
