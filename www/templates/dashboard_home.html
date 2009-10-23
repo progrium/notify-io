@@ -1,7 +1,11 @@
 {% extends 'dashboard.html' %}
 {% block dashboard %}
 <h3>Pending Approvals</h3>
-Sources that send you a message for the first time are held until you approve that source to send you messages. 
+<ul>
+  {% for channel in pending_channels %}
+  <li>{{ channel.source.source_name }} <form action="/dashboard/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
+  {% endfor %}
+</ul>
 
 <h3>Recent Notifications</h3>
 Show a few recent notifications from History.
@@ -12,7 +16,7 @@ The current prototype client is a Python script dependent on <a href="http://twi
 
 <h3>Debug</h3>
 Test notification
-<form action="http://api.notify.io/notify?hash={{ account.hash }}&api_key={{ account.api_key }}" method="post">
+<form action="http://api.notify.io/v1/notify/{{ account.hash }}?api_key={{ account.api_key }}" method="post">
   Title: <input type="text" name="title" /><br />
   Text:<br />
   <textarea name="text"></textarea><br />

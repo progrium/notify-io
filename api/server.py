@@ -63,9 +63,12 @@ class NotifyResource(Resource):
         return server.NOT_DONE_YET
 
     def notify_success(self, page_contents, hash, request):
-        for listener in listeners[hash]:
-            listener.queue.put(page_contents)
-        request.write("OK\n")
+        if page_contents[0:3] != '202':
+            for listener in listeners[hash]:
+                listener.queue.put(page_contents)
+            request.write("OK\n")
+        else:
+            request.write(page_contents)
         request.finish()
     
     def notify_failure(self, failure, request):

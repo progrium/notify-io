@@ -9,7 +9,18 @@ POST api.notify.io/v1/notify/:userhash
     
 
 -channels
--sending backlog / replay
+ -create on first notify
+ -list in sources
+ -approval
+ -sending backlog / replay
+ -better looking history
+ -email notifications
+ -better docs/instructions
+ -example sources
+  -email notifier with mailhooks
+  -twitter?
+  -pubsub hubbub -- rss
+  -remindify
 
 Account
 

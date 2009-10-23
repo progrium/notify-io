@@ -11,13 +11,59 @@ from django.utils import simplejson
 def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
 
+class Account(db.Model):
+    user = db.UserProperty(auto_current_user_add=True)
+    hash = db.StringProperty()
+    api_key = db.StringProperty()
+    source_enabled = db.BooleanProperty()
+    source_name = db.StringProperty()
+    source_icon = db.StringProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
+
+    #def __init__(self, *args, **kwargs):
+    #    super(Account, self).__init__(*args, **kwargs)
+    
+    @classmethod
+    def get_by_user(cls, user):
+        return cls.all().filter('user =', user).get()
+    
+    @classmethod
+    def get_by_hash(cls, hash):
+        return cls.all().filter('hash = ', hash).get()
+
+    def set_hash_and_key(self):
+        self.hash = hashlib.md5(self.user.email()).hexdigest()
+        self.api_key = ''.join([baseN(abs(hash(time.time())), 36), baseN(abs(hash(self.hash)), 36)])
+
+class Channel(db.Model):
+    target = db.ReferenceProperty(Account, required=True, collection_name='channels_as_target')
+    source = db.ReferenceProperty(Account, required=True, collection_name='channels_as_source')
+    status = db.StringProperty(required=True, default='pending')
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
+    
+    @classmethod
+    def get_all_by_target(cls, account):
+        return cls.all().filter('target =', account)
+
+    @classmethod
+    def get_all_by_source(cls, account):
+        return cls.all().filter('source =', account)
+    
+    @classmethod
+    def get_by_source_and_target(cls, source, target):
+        return cls.all().filter('source =', source).filter('target =', target).get()
+
 class Notification(db.Model):
-    hash = db.StringProperty(required=True)
+    channel = db.ReferenceProperty(Channel, required=True)
     title = db.StringProperty()
     text = db.TextProperty(required=True)
     link = db.StringProperty()
     icon = db.StringProperty()
     sticky = db.StringProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
     
     def to_json(self):
         o = {'text': self.text}
@@ -26,21 +72,6 @@ class Notification(db.Model):
             if value:
                 o[arg] = value
         return simplejson.dumps(o)
-
-class Account(db.Model):
-    user = db.UserProperty(auto_current_user_add=True)
-    hash = db.StringProperty()
-    api_key = db.StringProperty()
-    source_enabled = db.BooleanProperty()
-    source_name = db.StringProperty()
-    source_icon = db.StringProperty()
-
-    #def __init__(self, *args, **kwargs):
-    #    super(Account, self).__init__(*args, **kwargs)
-
-    def set_hash_and_key(self):
-        self.hash = hashlib.md5(self.user.email()).hexdigest()
-        self.api_key = ''.join([baseN(abs(hash(time.time())), 36), baseN(abs(hash(self.hash)), 36)])
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -53,21 +84,31 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(template.render('templates/main.html', locals()))
 
 class NotificationHandler(webapp.RequestHandler):
-    def post(self):
-        api_key = self.request.get('api_key')
-        userhash = self.request.get('hash')
-        target = Account.all().filter('hash =', userhash).get()
-        source = Account.all().filter('api_key =', api_key).get()
-        if source and target:
-            notice = Notification(hash=userhash, text=self.request.get('text'), icon=source.source_icon)
+    def post(self): 
+        target = Account.all().filter('hash =', self.request.get('hash')).get()
+        source = Account.all().filter('api_key =', self.request.get('api_key')).get()
+        channel = Channel.all().filter('target =', target).filter('source =', source).get()
+        if not channel and source and target:
+            channel = Channel(target=target, source=source)
+            channel.put()
+        if channel:
+            notice = Notification(channel=channel, text=self.request.get('text'), icon=source.source_icon)
             for arg in ['title', 'link', 'icon', 'sticky']:
                 value = self.request.get(arg, None)
                 if value:
                     setattr(notice, arg, value)
             notice.put()
-            self.response.out.write(notice.to_json())
+            if channel.status == 'enabled':
+                self.response.out.write(notice.to_json())
+            elif channel.status == 'pending':
+                self.response.set_status(202)
+                self.response.out.write("202 Pending approval")
+            elif channel.status == 'disabled':
+                self.response.set_status(202)
+                self.response.out.write("202 Accepted but disabled")
         else:
-            self.error(403)
+            self.error(404)
+            self.response.out.write("404 Target or source not found")
 
 class DownloadHandler(webapp.RequestHandler):
     @login_required
