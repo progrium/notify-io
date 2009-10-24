@@ -72,6 +72,7 @@ class Notification(db.Model):
             value = getattr(self, arg)
             if value:
                 o[arg] = value
+        o['source'] = self.channel.source.source_name
         return simplejson.dumps(o)
 
 class MainHandler(webapp.RequestHandler):
