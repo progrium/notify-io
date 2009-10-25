@@ -16,7 +16,7 @@ The current prototype client is a Python script dependent on <a href="http://twi
 
 <h3>Debug</h3>
 Test notification
-<form action="http://api.notify.io/v1/notify/{{ account.hash }}?api_key={{ account.api_key }}" method="post">
+<form action="http://{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}?api_key={{ account.api_key }}" method="post">
   Title: <input type="text" name="title" /><br />
   Text:<br />
   <textarea name="text"></textarea><br />

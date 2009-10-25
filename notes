@@ -8,14 +8,14 @@ POST api.notify.io/v1/notify/:userhash
     api_key
     
 
--channels
- -better looking history
- -email notifications
+TODO
+ -start design
+ 
  -better docs/instructions
  -example sources
   -email notifier with mailhooks
-  -twitter?
   -pubsub hubbub -- rss
+  -twitter?
   -remindify
 
 Account

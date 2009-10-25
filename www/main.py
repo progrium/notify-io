@@ -1,15 +1,32 @@
 import wsgiref.handlers
-import hashlib, time
+import hashlib, time, os
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.api import users
+from google.appengine.api import urlfetch
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
 
+try:
+  is_dev = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+except:
+  is_dev = False
+
+API_VERSION = 'v1'
+if is_dev:
+    API_HOST = 'localhost:8191'
+    WWW_HOST = 'localhost:8091'
+else:
+    API_HOST = 'api.notify.io'
+    WWW_HOST = 'www.notify.io'
+
 def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
+
+#def send_notification(notification):
+#    urlfetch.make_fetch_call(urlfetch.create_rpc(), "http://%s/%s/notify/%s?api_key=%s&replay=%s" % (API_HOST, API_VERSION, notification.target.hash, notification.target.api_key, notification.key().id()), method='POST', payload="")
 
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
@@ -54,6 +71,15 @@ class Channel(db.Model):
     @classmethod
     def get_by_source_and_target(cls, source, target):
         return cls.all().filter('source =', source).filter('target =', target).get()
+    
+    def get_approval_notice(self):
+        notice = Notification(channel=self, target=self.target, text="Click here to approve/deny this request")
+        notice.title = "%s wants to send notifications" % self.source.source_name
+        notice.link = "http://www.notify.io/dashboard/sources"
+        notice.icon = self.source.source_icon
+        notice.sticky = 'true'
+        return notice
+        
 
 class Notification(db.Model):
     channel = db.ReferenceProperty(Channel, required=True)
@@ -107,9 +133,11 @@ class NotificationHandler(webapp.RequestHandler):
     
     def notify(self, target, source):
         channel = Channel.all().filter('target =', target).filter('source =', source).get()
+        approval_notice = None
         if not channel and source and target:
             channel = Channel(target=target, source=source)
             channel.put()
+            approval_notice = channel.get_approval_notice()
         if channel:
             notice = Notification(channel=channel, target=target, text=self.request.get('text'), icon=source.source_icon)
             for arg in ['title', 'link', 'icon', 'sticky']:
@@ -121,7 +149,10 @@ class NotificationHandler(webapp.RequestHandler):
                 self.response.out.write(notice.to_json())
             elif channel.status == 'pending':
                 self.response.set_status(202)
-                self.response.out.write("202 Pending approval")
+                if approval_notice:
+                    self.response.out.write(approval_notice.to_json())
+                else:
+                    self.response.out.write("202 Pending approval")
             elif channel.status == 'disabled':
                 self.response.set_status(202)
                 self.response.out.write("202 Accepted but disabled")
@@ -134,7 +165,7 @@ class DownloadHandler(webapp.RequestHandler):
     def get(self):
         user = users.get_current_user()
         account = Account.all().filter('user =', user).get()
-        host = 'api.notify.io'
+        host = API_HOST
         hash = account.hash
         api_key = account.api_key
         self.response.headers['Content-Type'] = 'text/plain'

@@ -3,7 +3,7 @@
 <h3>Notification History</h3>
 <ul>
   {% for notice in notifications %}
-  <li style="margin-bottom: 10px;"><img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/> {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from {{ notice.channel.source.source_name }} at {{ notice.created }} | <form action="http://api.notify.io/v1/notify/{{account.hash}}?api_key={{account.api_key}}&replay={{notice.key.id}}" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
+  <li style="margin-bottom: 10px;"><img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/> {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from {{ notice.channel.source.source_name }} at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/notify/{{account.hash}}?api_key={{account.api_key}}&replay={{notice.key.id}}" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
   {% endfor %}
 </ul>
 {% endblock %}

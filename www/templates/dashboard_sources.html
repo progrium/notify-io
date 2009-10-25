@@ -6,14 +6,22 @@ Sources are notification senders. They are generally websites or web apps, but t
 <h4>Enabled Sources</h4>
 <ul>
   {% for channel in enabled_channels %}
-  <li>{{ channel.source.source_name }}</li>
+  <li>{{ channel.source.source_name }}
+    <!--form action="/dashboard/sources" method="post" style="display: inline;">
+      <input type="hidden" name="action" value="disable" />
+      <input type="hidden" name="source" value="{{ channel.source.hash }}">
+      <input type="submit" value="Disable"></form--></li>
   {% endfor %}
 </ul>
 
 <h4>Pending Sources</h4>
 <ul>
   {% for channel in pending_channels %}
-  <li>{{ channel.source.source_name }} <form action="/dashboard/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
+  <li>{{ channel.source.source_name }} 
+    <form action="/dashboard/sources" method="post" style="display: inline;">
+      <input type="hidden" name="action" value="approve" />
+      <input type="hidden" name="source" value="{{ channel.source.hash }}">
+      <input type="submit" value="Approve"></form></li>
   {% endfor %}
 </ul>
 

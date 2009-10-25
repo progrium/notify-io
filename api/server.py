@@ -9,7 +9,15 @@ import simplejson
 from twisted.web import client
 import urllib
 
-NOTIFY_WWW = 'http://localhost:8091'
+try:
+    if sys.argv[1] == '--dev':
+        # Development
+        NOTIFY_WWW = 'http://localhost:8091'
+        PORT = 8191
+except IndexError:
+    # Production
+    NOTIFY_WWW = 'http://www.notify.io'
+    PORT = 8003
 
 listeners = {} # Key: hash, Value: list of requests listening
 
@@ -121,7 +129,7 @@ class ListenResource(Resource):
         request.write("%s\n" % message)
 
 log.startLogging(sys.stdout)
-reactor.listenTCP(8191, Site(ContainerResource(
+reactor.listenTCP(PORT, Site(ContainerResource(
     v1=ContainerResource(
         listen=ListenResource(),
         notify=NotifyResource()

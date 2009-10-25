@@ -7,14 +7,16 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 
-from main import Account, Notification, Channel
+from main import Account, Notification, Channel, API_HOST, API_VERSION
 
-class DashboardHandler(webapp.RequestHandler):
+class HomeHandler(webapp.RequestHandler):
     @login_required
     def get(self):
         user = users.get_current_user()
         logout_url = users.create_logout_url('/')
         account = Account.all().filter('user =', user).get()
+        api_host = API_HOST
+        api_version = API_VERSION
         if not account:
             account = Account()
             account.set_hash_and_key()
@@ -48,6 +50,8 @@ class HistoryHandler(webapp.RequestHandler):
         user = users.get_current_user()
         logout_url = users.create_logout_url('/')
         account = Account.all().filter('user =', user).get()
+        api_host = API_HOST
+        api_version = API_VERSION
         notifications = Notification.all().filter('target =', account).order('-created')
         self.response.out.write(template.render('templates/dashboard_history.html', locals()))
 
@@ -70,6 +74,10 @@ class SourcesHandler(webapp.RequestHandler):
             channel = Channel.get_by_source_and_target(source, account)
             channel.status = 'enabled'
             channel.put()
+        if action == 'disable':
+            source = Account.get_by_hash(self.request.get('source'))
+            channel = Channel.get_by_source_and_target(source, account)
+            channel.status = 'disabled'
         self.redirect('/dashboard/sources')
 
 class NotifiersHandler(webapp.RequestHandler):
@@ -81,7 +89,7 @@ class NotifiersHandler(webapp.RequestHandler):
 
 def main():
     application = webapp.WSGIApplication([
-        ('/dashboard', DashboardHandler), 
+        ('/dashboard', HomeHandler), 
         ('/dashboard/settings', SettingsHandler),
         ('/dashboard/history', HistoryHandler),
         ('/dashboard/sources', SourcesHandler),
