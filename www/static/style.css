@@ -60,7 +60,8 @@ body {
 #panel p {font-size: 14px; margin-left: 5px; margin-bottom: 10px; }
 #sidebar { float: right; width: 200px; font-size: 14px;}
 #sidebar p { margin-bottom: 15px; }
-
+#sidebar ul { margin-left: 20px; }
+#sidebar li { color: #222;}
 
 #feature {
     background: #E5E5E5;

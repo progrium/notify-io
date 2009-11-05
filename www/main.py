@@ -99,9 +99,10 @@ class Notification(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     
     def __init__(self, *args, **kwargs):
-        if 'channel' in kwargs:
-            kwargs['source'] = kwargs['channel'].source
-            kwargs['target'] = kwargs['channel'].target
+        channel = kwargs.get('channel')
+        if channel and isinstance(channel, Channel):
+            kwargs['source'] = channel.source
+            kwargs['target'] = channel.target
         super(Notification, self).__init__(*args, **kwargs) 
     
     def to_json(self):
