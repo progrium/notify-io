@@ -1,12 +1,36 @@
 {% extends 'base.html' %}
+{% block content_class %}dashboard{% endblock %}
 {% block content %}
-<ul>
-  <li class="first"><a href="/dashboard">Home</a></li>
-  <li><a href="/dashboard/history">History</a></li>
-  <li><a href="/dashboard/sources">Sources</a></li>
-  <li><a href="/dashboard/notifiers">Notifiers</a></li>
-  <li><a href="/dashboard/settings">Settings</a></li>
+<ul id="menu">
+  <li><a class="{% block history_selected %}{% endblock %}" href="/dashboard/history">History</a></li>
+  <li><a class="{% block sources_selected %}{% endblock %}" href="/dashboard/sources">Sources</a></li>
+  <li><a class="{% block notifiers_selected %}{% endblock %}" href="/dashboard/notifiers">Notifiers</a></li>
+  <li><a class="{% block settings_selected %}{% endblock %}" href="/dashboard/settings">Settings</a></li>
 </ul>
-{% block dashboard %}{% endblock %}
+<div id="sidebar">
+  <p>
+    <h3>Pending Approvals</h3>
+    <ul>
+      {% for channel in pending_channels %}
+      <li>{{ channel.source.source_name }} <form action="/dashboard/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
+      {% endfor %}
+    </ul>
+  </p>
 
+  <p>
+    <h3>Recent Notifications</h3>
+    TODO: Show a few recent notifications from History.
+  </p>
+
+  <p>
+    <h3>Download Client</h3>
+    The current prototype client is a Python script dependent on <a href="http://twistedmatrix.com/trac/wiki/Downloads">Twisted</a> and the <a href="http://growl.info/documentation/developer/">Growl Python library</a>.<br />
+    <br />
+    <a href="/download/notifyio-client.py">Download Client for your Account</a>
+  </p>
+  
+</div>
+<div id="panel">
+{% block dashboard %}{% endblock %}
+</div>
 {% endblock %}

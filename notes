@@ -9,9 +9,10 @@ POST api.notify.io/v1/notify/:userhash
     
 
 TODO
- -start design
+ -roadmap group page
  
- -better docs/instructions
+ -growl installer w/ url???
+
  -example sources
   -email notifier with mailhooks
   -pubsub hubbub -- rss
@@ -32,14 +33,13 @@ Notifier
  name
  platform
 
-Growl
-Growl for Windows
-Snarl
-Prowl
-Mumbles
-Twitter Account
-Twitter DM
-WebHook
+OS X: Growl
+Windows: Growl for Windows, Snarl
+iPhone: Prowl
+Gnome: Mumbles
+KDE: KNotify
+Messaging: Email, Jabber, Twitter
+API: WebHooks, Comet Stream
   
 DASHBOARD
 Home
@@ -66,3 +66,13 @@ start with single "notification" from "notify.io" application
 next, try "notification" from each source with "notify.io" as application
 maybe try, each source has "notifications" and are registered as separate applications
 
+===
+
+You get pushed notifications
+-Works with major desktop notifiers
+-Instant setup for participating sites
+-History, filtering, and routing
+
+Websites push the notifications
+-Simple one-URL REST API
+-Hashed email-based user lookup

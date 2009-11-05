@@ -51,7 +51,7 @@ class NotifyResource(Resource):
         hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'notify':
             return "No hash"
-        api_key = request.args.get('api_key', [None])[0]
+        api_key = request.args.get('api_key', [request.getUser()])[0]
         if not api_key:
             return "No api key"
             
@@ -97,7 +97,7 @@ class ListenResource(Resource):
         hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'listen':
             return "No hash"
-        api_key = request.args.get('api_key', [None])[0]
+        api_key = request.args.get('api_key', [request.getUser()])[0]
         if not api_key:
             return "No api key"
             

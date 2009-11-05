@@ -1,18 +1,87 @@
 {% extends 'base.html' %}
+{% block feature %}
+<div id="feature">
+  <div class="width">
+    <h1>Notify.io is your global web notification system.</h1>
+    <h2>Real-time notifications of events from the web, under your control.</h2>
+    
+    <img id="video" src="/static/video.png" />
+    <h4>You get pushed notifications</h4>
+    <ul>
+      <li><span>Works with major desktop notifiers</span></li>
+      <li><span>Instant setup for participating sites</span></li>
+      <li><span>History, filtering<span class="notyet">*</span>, and routings<span class="notyet">*</span></span></li>
+    </ul>
+    <a class="button" id="getstarted" href="/getstarted">Get Started</a>
+    <h4>Websites push notifications</h4>
+    <ul>
+      <li><span>Simple one-URL REST API</span></li>
+      <li><span>Hashed email-based user lookup</span></li>
+    </ul>
+    <a class="button" id="learnmore" href="http://groups.google.com/group/notify-io/web/developers">Learn More</a>
+  </div>
+</div>
+{% endblock %}
 {% block content %}
-<h4>Some kind of blurb that instantly explains notify.io!</h4>
-Features for users:
-<ul>
-  <li>Get passive notifications from web apps using your favorite notification system</li>
-  <li>Have complete control over who can send you notifications</li>
-  <li>Log all notifications for future reference</li>
-  <li>Route notifications to different notifiers, such as Growl, IM, Twitter, etc</li>
-</ul>
-Features for app developers:
-<ul>
-  <li>Send your users important real-time notifications even when not on your site!</li>
-  <li>Simple REST API with a single URL</li>
-  <li>No need to register or lookup users--just hash their email, Gravatar style</li>
-  <li>Empower your users with control over your notifications to them</li>
-</ul>
+<div id="main">
+  <div class="col1">
+    <h4>Supported Notifiers</h4>
+    <small>We're still in pre-alpha. This is our expected list.<br/> Currently implemented are in bold.</small>  
+    <ul style="margin-top: 10px;">
+      <li><span>OS X: <strong>Growl</strong></span></li>
+      <li><span>Windows: Growl for Windows, Snarl</span></li>
+      <li><span>iPhone: Prowl</span></li>
+      <li><span>Gnome: Mumbles</span></li>
+      <li><span>KDE: KNotify</span></li>
+      <li><span>Messaging: Email, Jabber, Twitter</span></li>
+      <li><span>API: WebHooks, <strong>Comet Stream</strong></span></li>
+    </ul>
+  </div>
+
+  <div class="col2">
+    <h4>Participating Sites</h4>
+    <ul>
+      <li><span>FeedNotifier</span></li>
+      <li><span>TwitterNotifier</span></li>
+      <li><span>Remindify</span></li>
+      <li><span>You!</span></li>
+    </ul>
+  </div>
+
+  <div class="col3">
+    <h4>Recent Updates</h4>
+    <script src="http://widgets.twimg.com/j/2/widget.js"></script>
+    <script>
+    new TWTR.Widget({
+      version: 2,
+      type: 'profile',
+      rpp: 5,
+      interval: 6000,
+      width: 250,
+      height: 300,
+      theme: {
+        shell: {
+          background: '#e5e5e5',
+          color: '#303030'
+        },
+        tweets: {
+          background: '#ffffff',
+          color: '#000000',
+          links: '#e89236'
+        }
+      },
+      features: {
+        scrollbar: false,
+        loop: false,
+        live: false,
+        hashtags: false,
+        timestamp: true,
+        avatars: false,
+        behavior: 'all'
+      }
+    }).render().setUser('notifyio').start();
+    </script>
+  </div>
+  <div style="float: right; margin-top: -40px; margin-right: 10px; font-size: smaller;" class="notyet">* = Not yet actually implemented. Pre-alpha!</div>
+</div>
 {% endblock %}

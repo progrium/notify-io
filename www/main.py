@@ -10,9 +10,9 @@ from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
 
 try:
-  is_dev = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+    is_dev = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 except:
-  is_dev = False
+    is_dev = False
 
 API_VERSION = 'v1'
 if is_dev:
@@ -24,9 +24,6 @@ else:
 
 def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
-
-#def send_notification(notification):
-#    urlfetch.make_fetch_call(urlfetch.create_rpc(), "http://%s/%s/notify/%s?api_key=%s&replay=%s" % (API_HOST, API_VERSION, notification.target.hash, notification.target.api_key, notification.key().id()), method='POST', payload="")
 
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
@@ -72,18 +69,27 @@ class Channel(db.Model):
     def get_by_source_and_target(cls, source, target):
         return cls.all().filter('source =', source).filter('target =', target).get()
     
+    def delete(self):
+        notices = Notification.all().filter('channel =', self)
+        for n in notices:
+            n.channel = None
+            n.put()
+        super(Channel, self).delete()
+    
     def get_approval_notice(self):
-        notice = Notification(channel=self, target=self.target, text="Click here to approve/deny this request")
-        notice.title = "%s wants to send notifications" % self.source.source_name
-        notice.link = "http://www.notify.io/dashboard/sources"
+        notice = Notification(channel=self, target=self.target, text="%s wants to send you notifications. Click here to approve/deny this request." % self.source.source_name)
+        notice.title = "New Notification Source"
+        notice.link = "http://%s/dashboard/sources" % WWW_HOST
         notice.icon = self.source.source_icon
         notice.sticky = 'true'
         return notice
         
 
 class Notification(db.Model):
-    channel = db.ReferenceProperty(Channel, required=True)
-    target = db.ReferenceProperty(Account, required=True)
+    channel = db.ReferenceProperty(Channel)
+    target = db.ReferenceProperty(Account, collection_name='target_notifications')
+    source = db.ReferenceProperty(Account, collection_name='source_notifications')
+    
     title = db.StringProperty()
     text = db.TextProperty(required=True)
     link = db.StringProperty()
@@ -92,13 +98,19 @@ class Notification(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     
+    def __init__(self, *args, **kwargs):
+        if 'channel' in kwargs:
+            kwargs['source'] = kwargs['channel'].source
+            kwargs['target'] = kwargs['channel'].target
+        super(Notification, self).__init__(*args, **kwargs) 
+    
     def to_json(self):
         o = {'text': self.text}
         for arg in ['title', 'link', 'icon', 'sticky']:
             value = getattr(self, arg)
             if value:
                 o[arg] = value
-        o['source'] = self.channel.source.source_name
+        o['source'] = self.source.source_name
         return simplejson.dumps(o)
 
 class MainHandler(webapp.RequestHandler):
@@ -109,7 +121,7 @@ class MainHandler(webapp.RequestHandler):
             return
         else:
             login_url = users.create_login_url('/')
-        self.response.out.write(template.render('templates/main.html', locals()))
+        self.response.out.write(template.render('templates/main.html', locals()))#file('templates/main.html').read())#
 
 class NotificationHandler(webapp.RequestHandler):
     def post(self): 
@@ -139,7 +151,7 @@ class NotificationHandler(webapp.RequestHandler):
             channel.put()
             approval_notice = channel.get_approval_notice()
         if channel:
-            notice = Notification(channel=channel, target=target, text=self.request.get('text'), icon=source.source_icon)
+            notice = Notification(channel=channel, text=self.request.get('text'), icon=source.source_icon)
             for arg in ['title', 'link', 'icon', 'sticky']:
                 value = self.request.get(arg, None)
                 if value:
@@ -181,12 +193,20 @@ class ListenAuthHandler(webapp.RequestHandler):
         else:
             self.error(403)
 
+class IntroHandler(webapp.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if not user:
+            login_url = users.create_login_url('/')
+        self.response.out.write(template.render('templates/getstarted.html', locals()))
+
 def main():
     application = webapp.WSGIApplication([
         ('/', MainHandler), 
         ('/notification', NotificationHandler), 
         ('/download/notifyio-client.py', DownloadHandler),
         ('/auth', ListenAuthHandler),
+        ('/getstarted', IntroHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 

@@ -1,22 +1,70 @@
 <html>
   <head>
     <title>notify.io</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
     <div id="wrapper">
       <div id="header">
-        <h1>notify.io</h1>
-      </div>
-      <div id="content">
-        <div style="float: right;">
-          {% if user %}
-          {{ user.nickname }} | <a href="{{ logout_url }}">Logout</a>
-          {% else %}
-          Not logged in. <a href="{{ login_url }}">Login or Register?</a>
-          {% endif %}
+        <div class="width">
+          <a href="/"><img src="/static/notifyio-alpha.png" /></a>
+          <div id="account">
+            {% if user %}
+            {{ user.nickname }} | <a href="{{ logout_url }}">Logout</a>
+            {% else %}
+            <a href="{{ login_url }}">Login with Google</a>
+            {% endif %}
+          </div>
         </div>
-        {% block content %}{% endblock %}
+      </div>
+      {% block feature %}{% endblock %}
+      <div id="content" class="{% block content_class %}{% endblock %}">
+        <div class="width">
+          
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+      <div id="footer">
+        <div class="width">
+          <ul style="float: left;">
+            <li><span><a href="/getstarted">Get Started</a></span></li>
+            <li><span><a href="http://groups.google.com/group/notify-io/web/developers">Developers</a></span></li>
+            <li><span><a href="http://twitter.com/notifyio">Updates</a></span></li>
+            <li><span><a href="http://groups.google.com/group/notify-io/topics">Help / Discuss</a></span></li>
+          </ul>
+          <div class="stamps">
+            Public Open Source Service<br />
+            A GliderLab Collaboration
+          </div>
+        </div>
       </div>
     </div>
+    <script type="text/javascript">
+      var uservoiceJsHost = ("https:" == document.location.protocol) ? "https://uservoice.com" : "http://cdn.uservoice.com";
+      document.write(unescape("%3Cscript src='" + uservoiceJsHost + "/javascripts/widgets/tab.js' type='text/javascript'%3E%3C/script%3E"))
+    </script>
+    <script type="text/javascript">
+    UserVoice.Tab.show({ 
+      /* required */
+      key: 'notifyio',
+      host: 'notifyio.uservoice.com', 
+      forum: '32981', 
+      /* optional */
+      alignment: 'left',
+      background_color:'#88888C', 
+      text_color: 'white',
+      hover_color: '#06C',
+      lang: 'en'
+    })
+    </script>
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+    var pageTracker = _gat._getTracker("UA-6824126-8");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
   </body>
 </html>

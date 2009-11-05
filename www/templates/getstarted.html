@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block feature %}
+<div id="feature">
+  <div class="width">
+    <h1>Getting Started</h1>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+<div id="gettingstarted">
+  {% if user %}
+  
+  {% else %}
+  <p>Notify.io is about to put you in control of relevant notifications on the web. All you have to do is login with your Google Account and download our special version of Growl. From there you just have to find participating sites to send you notifications!</p>
+  <h3><a href="{{ login_url }}">Login with Google to Get Started</a></h3>
+  {% endif %}
+</div>
+{% endblock %}
