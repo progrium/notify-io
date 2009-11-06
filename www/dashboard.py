@@ -53,7 +53,7 @@ class HistoryHandler(webapp.RequestHandler):
         api_host = API_HOST
         api_version = API_VERSION
         pending_channels = Channel.get_all_by_target(account).filter('status =', 'pending')
-        notifications = Notification.all().filter('target =', account).order('-created')
+        notifications = Notification.all().filter('target =', account).order('-created').fetch(1000)
         self.response.out.write(template.render('templates/dashboard_history.html', locals()))
 
 class SourcesHandler(webapp.RequestHandler):

@@ -21,7 +21,7 @@
 </form>
 
 <h3>Debug - Test Notify</h3>
-<form action="http://{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}?api_key={{ account.api_key }}" method="post">
+<form action="http://{{ account.api_key }}@{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
   Title: <input type="text" name="title" /><small>(Optional)</small><br />
   Icon URL: <input type="text" name="icon" /><small>(Optional)</small><br />
   Link URL: <input type="text" name="link" /><small>(Optional)</small><br />

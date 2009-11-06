@@ -48,13 +48,16 @@ class NotifyResource(Resource):
         return "Method not allowed"
     
     def render_POST(self, request):
+        api_key = request.args.get('api_key', [request.getUser()])[0]
+        if not api_key:
+            request.setHeader('WWW-Authenticate', 'Basic realm="%s"' % 'notify.io')
+            errpage = error.ErrorPage(http.UNAUTHORIZED, "Unauthorized", "401 Authentication (API key) required")
+            return errpage.render(request)
+        
         hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'notify':
             return "No hash"
-        api_key = request.args.get('api_key', [request.getUser()])[0]
-        if not api_key:
-            return "No api key"
-            
+        
         if not hash in listeners:
             listeners[hash] = []
         
