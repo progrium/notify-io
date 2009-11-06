@@ -78,7 +78,7 @@ body {
 #feature #learnmore { background: #8A9C9B; }
 #feature #video { float: right; width: 450px; height: 275px; border: 8px solid #9CB38B; margin-right: 10px;}
 
-#main { padding-top: 20px; color: #111; min-height: 250px; }
+#main { padding-top: 20px; color: #111; min-height: 300px; }
 #main h4 { font-size: 24px; font-weight: normal; margin-bottom: 5px;}
 #main li { margin-left: 25px;}
 
