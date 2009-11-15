@@ -3,7 +3,7 @@
     <title>notify.io</title>
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
-  <body>
+  <body class="{% if user %}loggedin{% endif %} {% block content_class %}{% endblock %}">
     <div id="wrapper">
       <div id="header">
         <div class="width">
@@ -14,11 +14,19 @@
             {% else %}
             <a href="{{ login_url }}">Login with Google</a>
             {% endif %}
-          </div>
+          </div><br /><br />
+          {% if user %}
+          <ul id="menu">
+            <li><a class="{% block history_selected %}{% endblock %}" href="/dashboard/history">History</a></li>
+            <li><a class="{% block sources_selected %}{% endblock %}" href="/dashboard/sources">Sources</a></li>
+            <li><a class="{% block notifiers_selected %}{% endblock %}" href="/dashboard/notifiers">Notifiers</a></li>
+            <li><a class="{% block settings_selected %}{% endblock %}" href="/dashboard/settings">Settings</a></li>
+          </ul>
+          {% endif %}
         </div>
       </div>
       {% block feature %}{% endblock %}
-      <div id="content" class="{% block content_class %}{% endblock %}">
+      <div id="content">
         <div class="width">
           
           {% block content %}{% endblock %}
@@ -31,9 +39,10 @@
             <li><span><a href="http://groups.google.com/group/notify-io/web/developers">Developers</a></span></li>
             <li><span><a href="http://twitter.com/notifyio">Updates</a></span></li>
             <li><span><a href="http://groups.google.com/group/notify-io/topics">Help / Discuss</a></span></li>
+            <li><span><a href="http://github.com/progrium/notify-io">Code</a></span></li>
           </ul>
           <div class="stamps">
-            Public Open Source Service<br />
+            <a href="http://poss.gliderlab.com/">Public Open Source Service</a><br />
             A GliderLab Collaboration
           </div>
         </div>

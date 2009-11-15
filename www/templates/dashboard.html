@@ -1,12 +1,7 @@
 {% extends 'base.html' %}
 {% block content_class %}dashboard{% endblock %}
 {% block content %}
-<ul id="menu">
-  <li><a class="{% block history_selected %}{% endblock %}" href="/dashboard/history">History</a></li>
-  <li><a class="{% block sources_selected %}{% endblock %}" href="/dashboard/sources">Sources</a></li>
-  <li><a class="{% block notifiers_selected %}{% endblock %}" href="/dashboard/notifiers">Notifiers</a></li>
-  <li><a class="{% block settings_selected %}{% endblock %}" href="/dashboard/settings">Settings</a></li>
-</ul>
+<div id="dashboard-wrapper">
 <div id="sidebar">
   <p>
     <h3>Pending Approvals</h3>
@@ -32,5 +27,6 @@
 </div>
 <div id="panel">
 {% block dashboard %}{% endblock %}
+</div>
 </div>
 {% endblock %}

@@ -63,7 +63,7 @@ class NotifyResource(Resource):
         
         replay = request.args.get('replay', [None])[0]
         if replay:
-            client.getPage(url='%s/notification?hash=%s&api_key=%s&replay=%s' % (NOTIFY_WWW, hash, api_key, replay), method='POST') \
+            client.getPage(url='%s/notification' % NOTIFY_WWW, method='POST', postdata=urllib.urlencode({'replay': replay, 'hash': hash, 'api_key': api_key})) \
                 .addCallback(self.notify_success, hash, request) \
                 .addErrback(self.notify_failure, request)
                 
