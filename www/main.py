@@ -196,8 +196,9 @@ class ListenAuthHandler(webapp.RequestHandler):
 class IntroHandler(webapp.RequestHandler):
     def get(self):
         user = users.get_current_user()
+        logout_url = users.create_logout_url('/getstarted')
         if not user:
-            login_url = users.create_login_url('/')
+            login_url = users.create_login_url('/getstarted')
         self.response.out.write(template.render('templates/getstarted.html', locals()))
 
 def main():

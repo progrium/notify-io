@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block feature %}
+<style type="text/css">
+	#login-reminder { border: 2px solid #9cb38b; background-color: #dcf3cb; padding: 20px;}
+	.step { border-bottom: 2px solid #88888c; margin-top: 20px; padding-bottom: 20px; }
+	.step h4 { margin-bottom: 10px;}
+	.step p { margin-left: 20px;}
+</style>
 <div id="feature">
   <div class="width">
     <h1>Getting Started</h1>
@@ -9,10 +15,20 @@
 {% block content %}
 <div id="gettingstarted">
   {% if user %}
-  
   {% else %}
-  <p>Notify.io is about to put you in control of relevant notifications on the web. All you have to do is login with your Google Account and download our special version of Growl. From there you just have to find participating sites to send you notifications!</p>
-  <h3><a href="{{ login_url }}">Login with Google to Get Started</a></h3>
+  <div id="login-reminder"><p>Alright, first thing's first! You need to login with your Google account. This creates your Notify.io account and makes sure you are ready for the rest of the process.</p>
+  <h3><a href="{{ login_url }}">Login with Google</a></h3>
+  </div>
   {% endif %}
+	<div class="step">
+		<h4>1. Download Nio, the Notify.io Mac client</h4>
+		<p><a href="/static/notifyio-alpha.dmg">Click here</a> to start the download.</p>
+	</div>
+	<div class="step">
+		<h4>2. Drag the Nio icon into your Applications folder</h4>
+	</div>
+	<div class="step">
+		<h4>3. Drag the Nio icon into your Applications folder</h4>
+	</div>
 </div>
 {% endblock %}
