@@ -181,7 +181,8 @@ class DownloadHandler(webapp.RequestHandler):
         hash = account.hash
         api_key = account.api_key
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write(template.render('templates/client.py', locals()))
+        self.response.headers['Content-disposition'] = 'attachment; filename=config.ListenURL'
+        self.response.out.write("http://%s/v1/listen/%s?api_key=%s" % (host, hash, api_key))
 
 class ListenAuthHandler(webapp.RequestHandler):
     def get(self):
@@ -209,7 +210,7 @@ def main():
     application = webapp.WSGIApplication([
         ('/', MainHandler), 
         ('/notification', NotificationHandler), 
-        ('/download/notifyio-client.py', DownloadHandler),
+        ('/config.ListenURL', DownloadHandler),
         ('/auth', ListenAuthHandler),
         ('/getstarted', IntroHandler),
         ('/availablesources', AvailableSourcesHandler)

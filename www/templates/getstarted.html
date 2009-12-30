@@ -5,6 +5,7 @@
 	.step { border-bottom: 2px solid #88888c; margin-top: 20px; padding-bottom: 20px; }
 	.step h4 { margin-bottom: 10px;}
 	.step p { margin-left: 20px;}
+	.step ul li { color: black; margin-left: 40px; padding-top: 5px;}
 </style>
 <div id="feature">
   <div class="width">
@@ -22,13 +23,27 @@
   {% endif %}
 	<div class="step">
 		<h4>1. Download Nio, the Notify.io Mac client</h4>
-		<p><a href="/static/notifyio-alpha.dmg">Click here</a> to start the download.</p>
+		<p><a href="/static/nio-alpha.dmg">Click here</a> to start the download.</p>
 	</div>
 	<div class="step">
-		<h4>2. Drag the Nio icon into your Applications folder</h4>
+		<h4>2. Drag the Nio icon into your Applications folder.</h4>
 	</div>
 	<div class="step">
-		<h4>3. Drag the Nio icon into your Applications folder</h4>
+		<h4>3. Double click the Nio icon in your Applications folder.</h4>
+		<p>Nio is now running, but needs to be configured to receive your notifications.</p>
+	</div>
+	<div class="step">
+		<h4>4. Download and open the Desktop Notifier configuration for your account.</h4>
+		<p><a href="/config.ListenURL">Click here</a> to download. When asked, choose to Open the file.</p>
+	</div>
+	<div class="step">
+		<h4>5. You're now ready to receive notifications from any Notify.io source!</h4>
+		<p>From here you can:
+			<ul>
+			<li>Look for sites you use that support Notify.io from our available sources.</li>
+			<li>Add alternative notifiers such as email, Jabber, or Twitter.</li>
+			<li>Learn how you can add notifications to your site on our Developers page.</li>
+			</ul></p>
 	</div>
 </div>
 {% endblock %}
