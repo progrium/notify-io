@@ -200,6 +200,10 @@ class IntroHandler(webapp.RequestHandler):
         if not user:
             login_url = users.create_login_url('/getstarted')
         self.response.out.write(template.render('templates/getstarted.html', locals()))
+        
+class AvailableSourcesHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write(template.render('templates/availablesources.html', locals()))
 
 def main():
     application = webapp.WSGIApplication([
@@ -208,6 +212,7 @@ def main():
         ('/download/notifyio-client.py', DownloadHandler),
         ('/auth', ListenAuthHandler),
         ('/getstarted', IntroHandler),
+        ('/availablesources', AvailableSourcesHandler)
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
