@@ -1,7 +1,6 @@
 * { margin: 0; padding: 0; }
 body {
-    font-family: helvetica, arial;
-    letter-spacing:-0.1em;
+    font-family: arial, helvetica;
     border-top: 7px solid #FCB360;
     margin: 0px;
     background: #88888C;
