@@ -59,7 +59,7 @@ body {
     border-right: 2px solid #aaa; border-bottom: 2px solid #aaa; color: #111;
 }
 #panel h1 { margin-bottom: 15px; }
-#panel h2 { margin-top: 5px; margin-bottom: 10px; border-bottom: 1px solid #aaa; line-height: 20px;}
+#panel h2 { margin-top: 5px; margin-bottom: 10px; border-bottom: 2px solid #999; padding-bottom: 1px; line-height: 20px;}
 #panel ul { margin-left: 25px; margin-top: 5px; margin-bottom: 5px; }
 #panel li { color: #222; font-size: 14px; }
 #panel p {font-size: 14px; margin-left: 5px; margin-bottom: 10px; }
@@ -105,3 +105,5 @@ body {
 ul { list-style-type:square; }
 li { color: #FCB360; }
 li span { color: #111; }
+
+#start-tip { border: 2px solid #9cb38b; background-color: #dcf3cb; padding: 20px;}

@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 {% block content_class %}dashboard{% endblock %}
 {% block content %}
+{% if not account.started %}
+<div id="start-tip">
+	Hi! We noticed you haven't configured your Desktop Notifier yet. Be sure to <a href="/getstarted">Get Started</a> properly.
+	<div style="float: right; font-size: smaller; margin-top: 18px; margin-right: -10px;"><a href="{{ request.path }}?hide">Hide This</a></div></div>
+{% endif %}
 <div id="dashboard-wrapper">
 <div id="sidebar">
+	{% if pending_channels %}
   <p>
     <h3>Pending Approvals</h3>
     <ul>
       {% for channel in pending_channels %}
-      <li>{{ channel.source.source_name }} <form action="/dashboard/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
+      <li>{{ channel.source.source_name }} <form action="/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
       {% endfor %}
     </ul>
   </p>
+  {% endif %}
 
   <p>
     <h3>Recent Notifications</h3>

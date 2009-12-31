@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% block feature %}
 <style type="text/css">
-	#login-reminder { border: 2px solid #9cb38b; background-color: #dcf3cb; padding: 20px;}
-	.step { border-bottom: 2px solid #88888c; margin-top: 20px; padding-bottom: 20px; }
+	.step { border-top: 2px solid #88888c; margin-top: 20px; padding-top: 20px; }
 	.step h4 { margin-bottom: 10px;}
 	.step p { margin-left: 20px;}
 	.step ul li { color: black; margin-left: 40px; padding-top: 5px;}
@@ -17,10 +16,11 @@
 <div id="gettingstarted">
   {% if user %}
   {% else %}
-  <div id="login-reminder"><p>Alright, first thing's first! You need to login with your Google account. This creates your Notify.io account and makes sure you are ready for the rest of the process.</p>
+  <div id="start-tip"><p>Alright, first thing's first! You need to login with your Google account. This creates your Notify.io account and makes sure you are ready for the rest of the process.</p>
   <h3><a href="{{ login_url }}">Login with Google</a></h3>
   </div>
   {% endif %}
+	<h2>How to install Notify.io your Mac</h2>
 	<div class="step">
 		<h4>1. Download Nio, the Notify.io Mac client</h4>
 		<p><a href="/clients/nio-alpha.dmg">Click here</a> to start the download.</p>

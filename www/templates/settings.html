@@ -13,8 +13,9 @@
   <p>
   <input type="checkbox" value="true" name="source_enabled" {% if account.source_enabled %}checked="checked"{% endif %}/> Yes, I want to send notifications with this account<br />
   <p style="margin-left: 10px;">
-  Sender Name: <input type="text" name="source_name" {% if account.source_name %}value="{{account.source_name}}" {% endif %}/><br />
-  Sender Icon URL: <input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/><br />
+  Name: <input type="text" name="source_name" {% if account.source_name %}value="{{account.source_name}}" {% endif %}/><br />
+	Website URL: <input type="text" name="source_url" {% if account.source_icon %}value="{{account.source_url}}" {% endif %}/><br />
+  Icon URL: <input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/><br />
   </p>
   <input type="submit" value="Save" />
 </p>

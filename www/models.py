@@ -17,13 +17,12 @@ class Account(db.Model):
     api_key = db.StringProperty()
     source_enabled = db.BooleanProperty()
     source_name = db.StringProperty()
+    source_url = db.StringProperty()
     source_icon = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
+    started = db.BooleanProperty(default=False)
 
-    #def __init__(self, *args, **kwargs):
-    #    super(Account, self).__init__(*args, **kwargs)
-    
     @classmethod
     def get_by_user(cls, user):
         return cls.all().filter('user =', user).get()
@@ -72,6 +71,7 @@ class Channel(db.Model):
         
 
 class Notification(db.Model):
+    hash = db.StringProperty()
     channel = db.ReferenceProperty(Channel)
     target = db.ReferenceProperty(Account, collection_name='target_notifications')
     source = db.ReferenceProperty(Account, collection_name='source_notifications')
@@ -89,6 +89,7 @@ class Notification(db.Model):
         if channel and isinstance(channel, Channel):
             kwargs['source'] = channel.source
             kwargs['target'] = channel.target
+        kwargs['hash'] = kwargs.get('hash', hashlib.sha1(time.time()).hexdigest())
         super(Notification, self).__init__(*args, **kwargs) 
     
     def to_json(self):

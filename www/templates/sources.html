@@ -19,7 +19,7 @@
 <ul>
   {% for channel in pending_channels %}
   <li>{{ channel.source.source_name }} 
-    <form action="/dashboard/sources" method="post" style="display: inline;">
+    <form action="/sources" method="post" style="display: inline;">
       <input type="hidden" name="action" value="approve" />
       <input type="hidden" name="source" value="{{ channel.source.hash }}">
       <input type="submit" value="Approve"></form></li>
