@@ -28,9 +28,9 @@ class RequestHandler(webapp.RequestHandler):
             self.logout_url = users.create_logout_url('/')
             self.account = Account.all().filter('user =', self.user).get()
             if not self.account:
-                account = Account()
-                account.set_hash_and_key()
-                account.put()
+                self.account = Account()
+                self.account.set_hash_and_key()
+                self.account.put()
         else:
             self.logout_url = None
             self.account = None
