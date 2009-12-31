@@ -10,9 +10,11 @@ handlers:
 - url: /robots.txt
   static_files: static/robots.txt
   upload: static/robots.txt
+- url: /clients
+  static_dir: clients
 - url: /static
   static_dir: static
-- url: /dashboard.*
-  script: dashboard.py
+- url: /api.*
+  script: api.py
 - url: .*
   script: main.py
