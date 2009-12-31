@@ -15,21 +15,14 @@ from app import API_HOST, API_VERSION, RequestHandler
 
 class MainHandler(RequestHandler):
     def get(self):
-        user = users.get_current_user()
-        if user:
-            logout_url = users.create_logout_url('/')
-        else:
-            login_url = users.create_login_url('/dashboard')
         self.render('templates/main.html', locals())
 
 class DownloadHandler(RequestHandler):
     @login_required
     def get(self):
-        user = users.get_current_user()
-        account = Account.all().filter('user =', user).get()
         host = API_HOST
-        hash = account.hash
-        api_key = account.api_key
+        hash = self.account.hash
+        api_key = self.account.api_key
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.headers['Content-disposition'] = 'attachment; filename=config.ListenURL'
         self.response.out.write("http://%s/v1/listen/%s?api_key=%s" % (host, hash, api_key))
@@ -37,97 +30,64 @@ class DownloadHandler(RequestHandler):
 
 class GetStartedHandler(RequestHandler):
     def get(self):
-        user = users.get_current_user()
-        logout_url = users.create_logout_url('/getstarted')
-        if not user:
-            login_url = users.create_login_url('/getstarted')
-        self.response.out.write(template.render('templates/getstarted.html', locals()))
+        self.render('templates/getstarted.html', locals())
         
 class SourcesAvailableHandler(RequestHandler):
     def get(self):
-        self.response.out.write(template.render('templates/availablesources.html', locals()))
-
-
-class HomeHandler(RequestHandler):
-    @login_required
-    def get(self):
-        user = users.get_current_user()
-        logout_url = users.create_logout_url('/')
-        account = Account.all().filter('user =', user).get()
-        if not account:
-            account = Account()
-            account.set_hash_and_key()
-            account.put()
-        self.redirect('/dashboard/history')
+        self.render('templates/sources_available.html', locals())
 
 class SettingsHandler(RequestHandler):
     @login_required
     def get(self):
-        user = users.get_current_user()
-        logout_url = users.create_logout_url('/')
-        account = Account.all().filter('user =', user).get()
         api_host = API_HOST
         api_version = API_VERSION
-        pending_channels = Channel.get_all_by_target(account).filter('status =', 'pending')
-        self.response.out.write(template.render('templates/dashboard_settings.html', locals()))
+        pending_channels = Channel.get_all_by_target(self.account).filter('status =', 'pending')
+        self.render('templates/settings.html', locals())
     
     def post(self):
-        user = users.get_current_user()
-        account = Account.all().filter('user =', user).get()
         if self.request.get('source_enabled', None):
-            account.source_enabled = True
-            account.source_name = self.request.get('source_name', None)
-            account.source_icon = self.request.get('source_icon', None)
+            self.account.source_enabled = True
+            self.account.source_name = self.request.get('source_name', None)
+            self.account.source_icon = self.request.get('source_icon', None)
         else:
-            account.source_enabled = False
-        account.put()
+            self.account.source_enabled = False
+        self.account.put()
         self.redirect('/dashboard/settings')
 
 class HistoryHandler(RequestHandler):
     @login_required
     def get(self):
-        user = users.get_current_user()
-        logout_url = users.create_logout_url('/')
-        account = Account.all().filter('user =', user).get()
         api_host = API_HOST
         api_version = API_VERSION
-        pending_channels = Channel.get_all_by_target(account).filter('status =', 'pending')
-        notifications = Notification.all().filter('target =', account).order('-created').fetch(1000)
-        self.response.out.write(template.render('templates/dashboard_history.html', locals()))
+        pending_channels = Channel.get_all_by_target(self.account).filter('status =', 'pending')
+        notifications = Notification.all().filter('target =', self.account).order('-created').fetch(1000)
+        self.render('templates/history.html', locals())
 
 class SourcesHandler(RequestHandler):
     @login_required
     def get(self):
-        user = users.get_current_user()
-        logout_url = users.create_logout_url('/')
-        account = Account.get_by_user(user)
-        pending_channels = Channel.get_all_by_target(account).filter('status =', 'pending')
-        enabled_channels = Channel.get_all_by_target(account).filter('status =', 'enabled')
-        self.response.out.write(template.render('templates/dashboard_sources.html', locals()))
+        pending_channels = Channel.get_all_by_target(self.account).filter('status =', 'pending')
+        enabled_channels = Channel.get_all_by_target(self.account).filter('status =', 'enabled')
+        self.render('templates/sources.html', locals())
     
     def post(self):
-        user = users.get_current_user()
-        account = Account.get_by_user(user)
         action = self.request.get('action')
         if action == 'approve':
             source = Account.get_by_hash(self.request.get('source'))
-            channel = Channel.get_by_source_and_target(source, account)
+            channel = Channel.get_by_source_and_target(source, self.account)
             channel.status = 'enabled'
             channel.put()
         if action == 'disable':
             source = Account.get_by_hash(self.request.get('source'))
-            channel = Channel.get_by_source_and_target(source, account)
+            channel = Channel.get_by_source_and_target(source, self.account)
             channel.status = 'disabled'
         self.redirect('/dashboard/sources')
 
 class OutletsHandler(RequestHandler):
     @login_required
     def get(self):
-        user = users.get_current_user()
-        account = Account.get_by_user(user)
-        logout_url = users.create_logout_url('/')
-        pending_channels = Channel.get_all_by_target(account).filter('status =', 'pending')
-        self.response.out.write(template.render('templates/dashboard_notifiers.html', locals()))
+        pending_channels = Channel.get_all_by_target(self.account).filter('status =', 'pending')
+        self.render('templates/outlets.html', locals())
 
 
 def main():
@@ -135,12 +95,11 @@ def main():
         ('/', MainHandler), 
         ('/config.ListenURL', DownloadHandler),
         ('/getstarted', GetStartedHandler),
-        ('/availablesources', SourcesAvailableHandler),
-        ('/dashboard', HomeHandler), 
-        ('/dashboard/settings', SettingsHandler),
-        ('/dashboard/history', HistoryHandler),
-        ('/dashboard/sources', SourcesHandler),
-        ('/dashboard/notifiers', OutletsHandler),
+        ('/sources/available', SourcesAvailableHandler),
+        ('/settings', SettingsHandler),
+        ('/history', HistoryHandler),
+        ('/sources', SourcesHandler),
+        ('/outlets', OutletsHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
