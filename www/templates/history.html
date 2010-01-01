@@ -6,7 +6,7 @@
 {% if notifications %}
 <ul>
   {% for notice in notifications %}
-  <li style="margin-bottom: 10px;">{% if notice.icon %}<img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/>{% endif %} {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from {{ notice.source.source_name }} at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/notify/{{account.hash}}?api_key={{account.api_key}}&replay={{notice.key.id}}" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
+  <li style="margin-bottom: 10px;">{% if notice.icon %}<img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/>{% endif %} {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from {{ notice.source.source_name }} at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
   {% endfor %}
 </ul>
 {% else %}

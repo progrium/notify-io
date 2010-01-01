@@ -3,17 +3,14 @@ from twisted.web.resource import Resource
 from twisted.python import log
 from twisted.internet import reactor
 from twisted.web.server import Site
-import sys
 from twisted.internet.defer import DeferredQueue
-import simplejson
-from twisted.web import client
-import urllib
+import sys, simplejson, urllib
 
 try:
     if sys.argv[1] == '--dev':
         # Development
-        NOTIFY_WWW = 'http://localhost:8091'
-        PORT = 8191
+        NOTIFY_WWW = 'http://localhost:8080'
+        PORT = 9090
 except IndexError:
     # Production
     NOTIFY_WWW = 'http://www.notify.io'
@@ -41,6 +38,43 @@ class ContainerResource(Resource):
             self.putChild(key, kwargs[key])
 
 
+class ReplayResource(Resource):
+    isLeaf = True
+
+    def render_GET(self, request):
+        return "Method not allowed"
+    
+    def render_POST(self, request):
+        api_key = request.args.get('api_key', [request.getUser()])[0]
+        if not api_key:
+            request.setHeader('WWW-Authenticate', 'Basic realm="%s"' % 'Notify.io')
+            errpage = error.ErrorPage(http.UNAUTHORIZED, "Unauthorized", "401 Authentication (API key) required")
+            return errpage.render(request)
+        
+        hash = request.path.split('/')[-1].lower()
+        if not hash or hash == 'notify':
+            return "No hash"
+        
+        client.getPage(url='%s/api/replay/%s' % (NOTIFY_WWW, hash), method='POST', postdata=urllib.urlencode({'api_key': api_key})) \
+                .addCallback(self.replay_success, request) \
+                .addErrback(self.replay_failure, request)
+                
+        return server.NOT_DONE_YET
+
+    def replay_success(self, page_contents, request):
+        if page_contents[0:3] != '202':
+            hash, page_contents = page_contents.split('\n\n') # Could be better
+            for listener in listeners[hash]:
+                listener.queue.put(page_contents)
+            request.write("OK\n")
+        else:
+            request.write(page_contents)
+        request.finish()
+    
+    def replay_failure(self, failure, request):
+        request.write(str(failure))
+        request.finish()
+
 class NotifyResource(Resource):
     isLeaf = True
 
@@ -50,7 +84,7 @@ class NotifyResource(Resource):
     def render_POST(self, request):
         api_key = request.args.get('api_key', [request.getUser()])[0]
         if not api_key:
-            request.setHeader('WWW-Authenticate', 'Basic realm="%s"' % 'notify.io')
+            request.setHeader('WWW-Authenticate', 'Basic realm="%s"' % 'Notify.io')
             errpage = error.ErrorPage(http.UNAUTHORIZED, "Unauthorized", "401 Authentication (API key) required")
             return errpage.render(request)
         
@@ -61,22 +95,16 @@ class NotifyResource(Resource):
         if not hash in listeners:
             listeners[hash] = []
         
-        replay = request.args.get('replay', [None])[0]
-        if replay:
-            client.getPage(url='%s/notification' % NOTIFY_WWW, method='POST', postdata=urllib.urlencode({'replay': replay, 'hash': hash, 'api_key': api_key})) \
-                .addCallback(self.notify_success, hash, request) \
-                .addErrback(self.notify_failure, request)
-                
-        else:
-            notification = {}
-            for arg in ['title', 'text', 'icon', 'link', 'sticky']:
-                value = request.args.get(arg, [None])[0]
-                if value:
-                    notification[arg] = value
-            
-            client.getPage(url='%s/notification?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key), method='POST', postdata=urllib.urlencode(notification)) \
-                .addCallback(self.notify_success, hash, request) \
-                .addErrback(self.notify_failure, request)
+        notification = {}
+        for arg in ['title', 'text', 'icon', 'link', 'sticky']:
+            value = request.args.get(arg, [None])[0]
+            if value:
+                notification[arg] = value
+        notification['api_key'] = api_key
+        
+        client.getPage(url='%s/api/notify/%s' % (NOTIFY_WWW, hash), method='POST', postdata=urllib.urlencode(notification)) \
+            .addCallback(self.notify_success, hash, request) \
+            .addErrback(self.notify_failure, request)
                 
         return server.NOT_DONE_YET
 
@@ -104,7 +132,7 @@ class ListenResource(Resource):
         if not api_key:
             return "No api key"
             
-        client.getPage(url='%s/auth?hash=%s&api_key=%s' % (NOTIFY_WWW, hash, api_key)) \
+        client.getPage(url='%s/api/auth/%s?api_key=%s' % (NOTIFY_WWW, hash, api_key)) \
             .addCallback(self.start_stream, hash, request) \
             .addErrback(self.write_error, request)
         
@@ -135,7 +163,8 @@ log.startLogging(sys.stdout)
 reactor.listenTCP(PORT, Site(ContainerResource(
     v1=ContainerResource(
         listen=ListenResource(),
-        notify=NotifyResource()
+        notify=NotifyResource(),
+        replay=ReplayResource(),
     )
 )))
 reactor.run()

@@ -89,7 +89,7 @@ class Notification(db.Model):
         if channel and isinstance(channel, Channel):
             kwargs['source'] = channel.source
             kwargs['target'] = channel.target
-        kwargs['hash'] = kwargs.get('hash', hashlib.sha1(time.time()).hexdigest())
+        kwargs['hash'] = kwargs.get('hash', hashlib.sha1(str(time.time())).hexdigest())
         super(Notification, self).__init__(*args, **kwargs) 
     
     def to_json(self):
