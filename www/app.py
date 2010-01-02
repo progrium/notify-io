@@ -3,7 +3,22 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
-from models import Account, Channel, Outlet    
+from models import Account, Channel, Outlet, Notification
+from config import API_HOST, WWW_HOST, API_VERSION 
+
+register = webapp.template.create_template_register()
+
+@register.filter
+def replace(value, arg):
+    old, new = arg.split(',')
+    return value.replace(old, new)
+
+@register.filter
+def shortago(value):
+    value = value.replace(' hours', 'h').replace(' hour', 'h') \
+                .replace(' minutes', 'm').replace(' minute', 'm') \
+                .replace(' days', 'd').replace(' day', 'd')
+    return '%s ago' % value
 
 class RequestHandler(webapp.RequestHandler):
     def initialize(self, request, response):
@@ -41,10 +56,14 @@ class RequestHandler(webapp.RequestHandler):
             'logout_url': self.logout_url,
             'login_url': self.login_url,
             'account': self.account,
+            'api_host': API_HOST,
+            'api_version': API_VERSION,
+            'www_host': WWW_HOST,
         })
         self.response.out.write(template.render(template_path, locals))
 
 class DashboardHandler(RequestHandler):
     def render(self, template_path, locals):
         locals['pending_channels'] = Channel.get_all_by_target(self.account).filter('status =', 'pending').fetch(10)
+        locals['recent_notifications'] = Notification.get_history_by_target(self.account).fetch(3)
         super(DashboardHandler, self).render(template_path, locals)

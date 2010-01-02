@@ -1,10 +1,10 @@
 {% extends 'dashboard.html' %}
 {% block sources_selected %}selected{% endblock %}
 {% block dashboard %}
-<h2>Notification Sources</h2>
+<h2>Your Notification Sources</h2>
 <ul>
   {% for channel in enabled_channels %}
-  <li><img src="{{ channel.source.source_or_default_icon }}" /> {{ channel.source.source_name }}<br />
+  <li><img src="{{ channel.source.source_or_default_icon }}" /> <a href="/sources/{{channel.source.hash}}">{{ channel.source.source_name }}</a><br />
 		{{ channel.count }} notifications. Outlet: 
 		<form action="/sources" method="post" style="display: inline;" id="{{channel.source.hash}}-route">
 			<input type="hidden" name="action" value="route" />

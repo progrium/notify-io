@@ -14,6 +14,8 @@ from app import RequestHandler, DashboardHandler
 from config import API_HOST, API_VERSION
 import outlet_types
 
+template.register_template_library('app')
+
 class MainHandler(RequestHandler):
     def get(self):
         self.render('templates/main.html', locals())
@@ -30,8 +32,6 @@ class SourcesAvailableHandler(RequestHandler):
 class SettingsHandler(DashboardHandler):
     @login_required
     def get(self):
-        api_host = API_HOST
-        api_version = API_VERSION
         self.render('templates/settings.html', locals())
     
     def post(self):
@@ -48,36 +48,40 @@ class SettingsHandler(DashboardHandler):
 class HistoryHandler(DashboardHandler):
     @login_required
     def get(self):
-        api_host = API_HOST
-        api_version = API_VERSION
-        notifications = Notification.all().filter('target =', self.account).order('-created').fetch(1000)
+        notifications = Notification.get_history_by_target(self.account).fetch(100)
         self.render('templates/history.html', locals())
 
 class SourcesHandler(DashboardHandler):
     @login_required
     def get(self):
         outlets = Outlet.all().filter('target =', self.account)
-        enabled_channels = Channel.get_all_by_target(self.account).filter('status =', 'enabled')
-        self.render('templates/sources.html', locals())
+        if len(self.request.path.split('/')) > 2:
+            source = Account.get_by_hash(self.request.path.split('/')[-1])
+            channel = Channel.get_by_source_and_target(source, self.account)
+            self.render('templates/source.html', locals())
+        else:
+            enabled_channels = Channel.get_all_by_target(self.account).filter('status =', 'enabled')
+            self.render('templates/sources.html', locals())
     
     def post(self):
         action = self.request.get('action')
+        source = Account.get_by_hash(self.request.get('source'))
+        channel = Channel.get_by_source_and_target(source, self.account)
         if action == 'approve':
-            source = Account.get_by_hash(self.request.get('source'))
-            channel = Channel.get_by_source_and_target(source, self.account)
             channel.status = 'enabled'
             channel.put()
         elif action == 'disable':
-            source = Account.get_by_hash(self.request.get('source'))
-            channel = Channel.get_by_source_and_target(source, self.account)
             channel.status = 'disabled'
+            # hmm?
         elif action == 'route':
-            source = Account.get_by_hash(self.request.get('source'))
-            channel = Channel.get_by_source_and_target(source, self.account)
             outlet = Outlet.get_by_hash(self.request.get('outlet'))
             channel.outlet = outlet
             channel.put()
-        self.redirect('/sources')
+            
+        if 'return' in self.request.query_string:
+            self.redirect('/sources/%s' % self.request.get('source'))
+        else:
+            self.redirect('/sources')
 
 class OutletsHandler(DashboardHandler):
     @login_required
@@ -89,12 +93,9 @@ class OutletsHandler(DashboardHandler):
             self.account.started = True
             self.account.put()
 
-            host = API_HOST
-            hash = self.account.hash
-            api_key = self.account.api_key
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.headers['Content-disposition'] = 'attachment; filename=%s.ListenURL' % outlet
-            self.response.out.write("http://%s/v1/listen/%s\n" % (host, outlet))
+            self.response.out.write("http://%s/%s/listen/%s\n" % (API_HOST, API_VERSION, outlet))
         else:
             types = outlet_types.all
             outlets = Outlet.all().filter('target =', self.account)
@@ -119,7 +120,7 @@ def main():
         ('/sources/available', SourcesAvailableHandler),
         ('/settings', SettingsHandler),
         ('/history', HistoryHandler),
-        ('/sources', SourcesHandler),
+        ('/sources.*', SourcesHandler),
         ('/outlets.*', OutletsHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)

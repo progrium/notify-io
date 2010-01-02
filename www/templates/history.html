@@ -1,12 +1,12 @@
 {% extends 'dashboard.html' %}
 {% block history_selected %}selected{% endblock %}
 {% block dashboard %}
-<h2>Notification History</h2>
+<h2>Your Notification History</h2>
 
 {% if notifications %}
 <ul>
   {% for notice in notifications %}
-  <li style="margin-bottom: 10px;">{% if notice.icon %}<img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/>{% endif %} {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from {{ notice.source.source_name }} at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" target="replay" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
+  <li style="margin-bottom: 10px;">{% if notice.icon %}<img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/>{% endif %} {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from <a href="/sources/{{notice.source.hash}}">{{ notice.source.source_name }}</a> at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" target="replay" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
   {% endfor %}
 </ul>
 <iframe name="replay" style="margin-left: 20px; width: 0px; height: 0px;"></iframe>

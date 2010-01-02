@@ -68,7 +68,6 @@ def main():
     application = webapp.WSGIApplication([
         ('/api/notify.*', NotifyHandler), 
         ('/api/replay.*', ReplayHandler), 
-        ('/api/auth.*', AuthHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 

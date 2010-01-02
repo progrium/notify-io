@@ -148,6 +148,13 @@ class Notification(db.Model):
     def dispatch(self):
         return str(self.channel.outlet.type().dispatch(self))
     
+    @classmethod
+    def get_history_by_target(cls, target):
+        return cls.all().filter('target =', target).order('-created')
+    
+    def icon_with_default(self):
+        return self.icon or self.source.source_or_default_icon()
+    
     def to_dict(self):
         o = {'text': self.text}
         for arg in ['title', 'link', 'icon', 'sticky']:
