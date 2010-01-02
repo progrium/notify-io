@@ -84,8 +84,6 @@ class Outlet(db.Model):
         self.name = name
 
 
-
-
 class Channel(db.Model):
     target = db.ReferenceProperty(Account, required=True, collection_name='channels_as_target')
     source = db.ReferenceProperty(Account, required=True, collection_name='channels_as_source')

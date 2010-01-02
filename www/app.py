@@ -14,8 +14,11 @@ class RequestHandler(webapp.RequestHandler):
             self.logout_url = users.create_logout_url('/')
             self.account = Account.all().filter('user =', self.user).get()
             if not self.account:
+                # Set up a Notify.io account
+                
                 self.account = Account()
                 self.account.set_hash_and_key()
+                self.account.source_name = self.user.nick() # More useful default than None
                 self.account.put()
                 
                 # Create default Desktop Notifier

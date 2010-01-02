@@ -18,20 +18,6 @@ class MainHandler(RequestHandler):
     def get(self):
         self.render('templates/main.html', locals())
 
-class DownloadHandler(RequestHandler):
-    @login_required
-    def get(self):
-        self.account.started = True
-        self.account.put()
-        
-        host = API_HOST
-        hash = self.account.hash
-        api_key = self.account.api_key
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.headers['Content-disposition'] = 'attachment; filename=config.ListenURL'
-        self.response.out.write("http://%s/v1/listen/%s?api_key=%s" % (host, hash, api_key))
-
-
 class GetStartedHandler(RequestHandler):
     def get(self):
         start_outlet = self.account.get_default_outlet()
@@ -129,7 +115,6 @@ class OutletsHandler(DashboardHandler):
 def main():
     application = webapp.WSGIApplication([
         ('/', MainHandler), 
-        ('/config.ListenURL', DownloadHandler),
         ('/getstarted', GetStartedHandler),
         ('/sources/available', SourcesAvailableHandler),
         ('/settings', SettingsHandler),

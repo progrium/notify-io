@@ -13,16 +13,6 @@ from models import Account, Notification, Channel
 from config import API_HOST, API_VERSION
 from app import RequestHandler
 
-class AuthHandler(RequestHandler):
-    def get(self):
-        userhash = self.request.path.split('/')[-1]
-        api_key = self.request.get('api_key')
-        account = Account.all().filter('hash =', userhash).filter('api_key =', api_key).get()
-        if account:
-            self.response.out.write("ok")
-        else:
-            self.error(403)
-
 class ReplayHandler(RequestHandler):
     def post(self): 
         notice_hash = self.request.path.split('/')[-1]
