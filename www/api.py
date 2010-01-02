@@ -30,7 +30,7 @@ class ReplayHandler(RequestHandler):
         target = Account.all().filter('api_key =', self.request.get('api_key')).get()
         channel = notice.channel
         if notice and channel.status == 'enabled' and channel.target.key() == target.key():
-            self.response.out.write(":".join([channel.outlet.hash, notice.to_json()]))
+            self.response.out.write(notice.dispatch())
         else:
             self.error(404)
 
@@ -47,6 +47,7 @@ class NotifyHandler(RequestHandler):
             channel = Channel(target=target, source=source, outlet=target.get_default_outlet())
             channel.put()
             approval_notice = channel.get_approval_notice()
+            
         if channel:
             notice = Notification(channel=channel, text=self.request.get('text'), icon=source.source_icon)
             for arg in ['title', 'link', 'icon', 'sticky']:
@@ -58,11 +59,12 @@ class NotifyHandler(RequestHandler):
             channel.put()
             
             if channel.status == 'enabled':
-                self.response.out.write(":".join([channel.outlet.hash, notice.to_json()]))
+                self.response.out.write(notice.dispatch())
+                
             elif channel.status == 'pending':
                 self.response.set_status(202)
                 if approval_notice:
-                    self.response.out.write(approval_notice.to_json())
+                    self.response.out.write(":".join([channel.outlet.hash, approval_notice.to_json()]))
                 else:
                     self.response.out.write("202 Pending approval")
             elif channel.status == 'disabled':

@@ -1,13 +1,11 @@
 from django.utils import simplejson
+from google.appengine.api import mail, xmpp, urlfetch
+import urllib
 
 class BaseOutlet(object):
     name = None
     push = True
     fields = []
-    
-    def __init__(self, outlet_data):
-        self.data = outlet_data
-        self.params = simplejson.loads(outlet_data.params)
     
     @classmethod
     def type(cls):
@@ -16,6 +14,10 @@ class BaseOutlet(object):
     @classmethod
     def default_name(cls, params):
         pass
+    
+    @classmethod
+    def dispatch(cls, notice):
+        return ":".join([notice.channel.outlet.hash, notice.to_json()])
 
 class DesktopNotifier(BaseOutlet):
     name = "Desktop Notifier"
@@ -24,6 +26,10 @@ class DesktopNotifier(BaseOutlet):
     @classmethod
     def default_name(cls, params):
         return "A Desktop Notifier"
+    
+    @classmethod
+    def dispatch(cls, notice):
+        return ":".join([notice.channel.outlet.hash, notice.to_json()])
 
 class Email(BaseOutlet):
     name = "Email"
@@ -32,6 +38,14 @@ class Email(BaseOutlet):
     @classmethod
     def default_name(cls, params):
         return "Email to %s" % params['email']
+    
+    @classmethod
+    def dispatch(cls, notice):
+        email = notice.channel.outlet.get_param('email')
+        mail.send_mail(sender="%s <no-reply@notify-io.appspotmail.com>" % notice.source.source_name, to=email, \
+            subject="[Notification] %s" % notice.title or notice.text, \
+            body="%s\n\n%s" % (notice.text, notice.link))
+        return None
 
 class Jabber(BaseOutlet):
     name = "Jabber IM"
@@ -40,6 +54,13 @@ class Jabber(BaseOutlet):
     @classmethod
     def default_name(cls, params):
         return "Send IM to %s" % params['jid']
+    
+    @classmethod
+    def dispatch(cls, notice):
+        jid = notice.channel.outlet.get_param('jid')
+        body = "%s: %s" % (notice.title, notice.text) if notice.title else notice.text 
+        xmpp.send_message(jid, "%s %s [%s]" % (body, notice.link or '', notice.source.source_name))
+        return None
 
 class Webhook(BaseOutlet):
     name = "Webhook"
@@ -48,6 +69,12 @@ class Webhook(BaseOutlet):
     @classmethod
     def default_name(cls, params):
         return "Webhook at %s" % params['url']
+    
+    @classmethod
+    def dispatch(cls, notice):
+        url = notice.channel.outlet.get_param('url')
+        urlfetch.fetch(url, method='POST', payload=urllib.urlencode(notice.to_dict()))
+        return None
 
 _globals = globals()
 def get(outlet_name):

@@ -8,14 +8,23 @@ TODO
   -facebook says
 
  -recent notifications sidebar
- -replace client download with page tips
+ -write page tips
  -require enabled source+name before allowing notify (+setting validation)
  -delete in history
- -add notification count to channel
  -sort sources by traffic
- -rename outlets
+ -allow rename outlets
+ -add icons to tabs
+ -Nio taskbar icon
 
 BUGS
  -random stream server fail with 500 (but with 200)
  -nio doesn't reconnect when server restarts
  -nio doesn't make connection when new listenURL is added
+
+OUTLETS
+ -sms
+ -irc
+ -prowl
+ -twitter (dm?)
+ -telephone?
+ -rss?

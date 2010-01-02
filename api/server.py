@@ -63,10 +63,11 @@ class ReplayResource(Resource):
 
     def replay_success(self, page_contents, request):
         if page_contents[0:3] != '202':
-            hashes, message = page_contents.split(':', 1)
-            for hash in hashes.split(','):
-                for listener in listeners[hash]:
-                    listener.queue.put(message.strip())
+            if ':' in page_contents:
+                hashes, message = page_contents.split(':', 1)
+                for hash in hashes.split(','):
+                    for listener in listeners[hash]:
+                        listener.queue.put(message.strip())
             request.write("OK\n")
         else:
             request.write(page_contents)
@@ -111,10 +112,11 @@ class NotifyResource(Resource):
 
     def notify_success(self, page_contents, hash, request):
         if page_contents[0:3] != '202':
-            hashes, message = page_contents.split(':', 1)
-            for hash in hashes.split(','):
-                for listener in listeners[hash]:
-                    listener.queue.put(message.strip())
+            if ':' in page_contents:
+                hashes, message = page_contents.split(':', 1)
+                for hash in hashes.split(','):
+                    for listener in listeners[hash]:
+                        listener.queue.put(message.strip())
             request.write("OK\n")
         else:
             request.write(page_contents)

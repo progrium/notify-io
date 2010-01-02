@@ -68,6 +68,9 @@ class Outlet(db.Model):
     def type(self):
         return outlet_types.get(self.type_name)
     
+    def get_param(self, key):
+        return simplejson.loads(self.params)[key]
+    
     def set_params(self, input):
         params = dict()
         for f in self.type().fields:
@@ -144,11 +147,17 @@ class Notification(db.Model):
         kwargs['hash'] = kwargs.get('hash', hashlib.sha1(str(time.time())).hexdigest())
         super(Notification, self).__init__(*args, **kwargs) 
     
-    def to_json(self):
+    def dispatch(self):
+        return str(self.channel.outlet.type().dispatch(self))
+    
+    def to_dict(self):
         o = {'text': self.text}
         for arg in ['title', 'link', 'icon', 'sticky']:
             value = getattr(self, arg)
             if value:
                 o[arg] = value
         o['source'] = self.source.source_name
-        return simplejson.dumps(o)
+        return o
+        
+    def to_json(self):
+        return simplejson.dumps(self.to_dict())
