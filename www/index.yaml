@@ -20,3 +20,10 @@ indexes:
   - name: target
   - name: created
     direction: desc
+
+- kind: Outlet
+  properties:
+  - name: target
+  - name: type_name
+  - name: created
+    direction: desc

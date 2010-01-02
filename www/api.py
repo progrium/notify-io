@@ -10,7 +10,8 @@ from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
 
 from models import Account, Notification, Channel
-from app import API_HOST, API_VERSION, RequestHandler
+from config import API_HOST, API_VERSION
+from app import RequestHandler
 
 class AuthHandler(RequestHandler):
     def get(self):
@@ -29,7 +30,7 @@ class ReplayHandler(RequestHandler):
         target = Account.all().filter('api_key =', self.request.get('api_key')).get()
         channel = notice.channel
         if notice and channel.status == 'enabled' and channel.target.key() == target.key():
-            self.response.out.write("\n\n".join([target.hash, notice.to_json()])) # Could be better
+            self.response.out.write(":".join([channel.outlet.hash, notice.to_json()]))
         else:
             self.error(404)
 
@@ -43,7 +44,7 @@ class NotifyHandler(RequestHandler):
         channel = Channel.all().filter('target =', target).filter('source =', source).get()
         approval_notice = None
         if not channel and source and target:
-            channel = Channel(target=target, source=source)
+            channel = Channel(target=target, source=source, outlet=target.get_default_outlet())
             channel.put()
             approval_notice = channel.get_approval_notice()
         if channel:
@@ -53,8 +54,11 @@ class NotifyHandler(RequestHandler):
                 if value:
                     setattr(notice, arg, value)
             notice.put()
+            channel.count += 1
+            channel.put()
+            
             if channel.status == 'enabled':
-                self.response.out.write(notice.to_json())
+                self.response.out.write(":".join([channel.outlet.hash, notice.to_json()]))
             elif channel.status == 'pending':
                 self.response.set_status(202)
                 if approval_notice:

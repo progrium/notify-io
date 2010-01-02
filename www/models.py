@@ -8,6 +8,9 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
 
+from config import WWW_HOST
+import outlet_types
+
 def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
 
@@ -15,10 +18,12 @@ class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     hash = db.StringProperty()
     api_key = db.StringProperty()
+    
     source_enabled = db.BooleanProperty()
     source_name = db.StringProperty()
     source_url = db.StringProperty()
     source_icon = db.StringProperty()
+    
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     started = db.BooleanProperty(default=False)
@@ -31,13 +36,59 @@ class Account(db.Model):
     def get_by_hash(cls, hash):
         return cls.all().filter('hash = ', hash).get()
 
+    def source_or_default_icon(self):
+        return self.source_icon or 'http://%s/favicon.ico' % WWW_HOST
+
+    def get_default_outlet(self):
+        return Outlet.all().filter('target =', self).filter('type_name =', 'DesktopNotifier').order('-created').get()
+
     def set_hash_and_key(self):
         self.hash = hashlib.md5(self.user.email()).hexdigest()
         self.api_key = ''.join([baseN(abs(hash(time.time())), 36), baseN(abs(hash(self.hash)), 36)])
 
+class Outlet(db.Model):
+    hash = db.StringProperty()
+    target = db.ReferenceProperty(Account, required=True)
+    type_name = db.StringProperty(required=True)
+    name = db.StringProperty()
+    params = db.StringProperty()
+    
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
+    
+
+    def __init__(self, *args, **kwargs):
+        kwargs['hash'] = kwargs.get('hash', hashlib.sha1(str(time.time())).hexdigest())
+        super(Outlet, self).__init__(*args, **kwargs)
+    
+    @classmethod
+    def get_by_hash(cls, hash):
+        return cls.all().filter('hash = ', hash).get()
+    
+    def type(self):
+        return outlet_types.get(self.type_name)
+    
+    def set_params(self, input):
+        params = dict()
+        for f in self.type().fields:
+            params[f] = input.get(f)
+        self._tmp_params = params
+        self.params = simplejson.dumps(params)
+    
+    def set_name(self, name=None):
+        if not name:
+            name = self.type().default_name(self._tmp_params)
+        self.name = name
+
+
+
+
 class Channel(db.Model):
     target = db.ReferenceProperty(Account, required=True, collection_name='channels_as_target')
     source = db.ReferenceProperty(Account, required=True, collection_name='channels_as_source')
+    outlet = db.ReferenceProperty(Outlet, required=True)
+    count = db.IntegerProperty(default=0)
+
     status = db.StringProperty(required=True, default='pending')
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
@@ -64,7 +115,7 @@ class Channel(db.Model):
     def get_approval_notice(self):
         notice = Notification(channel=self, target=self.target, text="%s wants to send you notifications. Click here to approve/deny this request." % self.source.source_name)
         notice.title = "New Notification Source"
-        notice.link = "http://%s/dashboard/sources" % WWW_HOST
+        notice.link = "http://%s/sources" % WWW_HOST
         notice.icon = self.source.source_icon
         notice.sticky = 'true'
         return notice
@@ -81,6 +132,7 @@ class Notification(db.Model):
     link = db.StringProperty()
     icon = db.StringProperty()
     sticky = db.StringProperty()
+
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     

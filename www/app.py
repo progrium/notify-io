@@ -3,21 +3,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
-from models import Account, Channel
-
-try:
-    is_dev = os.environ['SERVER_SOFTWARE'].startswith('Dev')
-except:
-    is_dev = False
-
-API_VERSION = 'v1'
-if is_dev:
-    API_HOST = 'localhost:9090'
-    WWW_HOST = 'localhost:8080'
-else:
-    API_HOST = 'api.notify.io'
-    WWW_HOST = 'www.notify.io'
-    
+from models import Account, Channel, Outlet    
 
 class RequestHandler(webapp.RequestHandler):
     def initialize(self, request, response):
@@ -31,6 +17,11 @@ class RequestHandler(webapp.RequestHandler):
                 self.account = Account()
                 self.account.set_hash_and_key()
                 self.account.put()
+                
+                # Create default Desktop Notifier
+                o = Outlet(target=self.account, type_name='DesktopNotifier')
+                o.set_name("Default Desktop Notifier")
+                o.put()
         else:
             self.logout_url = None
             self.account = None

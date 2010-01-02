@@ -22,13 +22,13 @@
 </form>
 
 <h3>Debug - Test Notify</h3>
-<form action="http://{{ account.api_key }}@{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
+<form target="debug" action="http://{{ account.api_key }}@{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
   Title: <input type="text" name="title" /><small>(Optional)</small><br />
   Icon URL: <input type="text" name="icon" /><small>(Optional)</small><br />
   Link URL: <input type="text" name="link" /><small>(Optional)</small><br />
   Text:<br />
   <textarea name="text"></textarea><br />
   <input type="checkbox" name="sticky" value="true" /> Sticky?<br />
-  <input type="submit" value="Notify">
+  <input type="submit" value="Notify"><iframe name="debug" style="margin-left: 20px; width: 0px; height: 0px;"></iframe>
 </form>
 {% endblock %}

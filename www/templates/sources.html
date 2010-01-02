@@ -2,12 +2,19 @@
 {% block sources_selected %}selected{% endblock %}
 {% block dashboard %}
 <h2>Notification Sources</h2>
-<p>Sources are notification senders. They are generally websites or web apps, but they can also be people. Anybody with a notify.io account can be a source. This page lets you manage your sources, allowing or disallowing their ability to send notifications and eventually being able to filter their notifications in various ways.</p>
-<p>You can view a <a href="/sources/available">list of available sources here.</a></p>
-<h4>Enabled Sources</h4>
 <ul>
   {% for channel in enabled_channels %}
-  <li>{{ channel.source.source_name }}
+  <li><img src="{{ channel.source.source_or_default_icon }}" /> {{ channel.source.source_name }}<br />
+		{{ channel.count }} notifications. Outlet: 
+		<form action="/sources" method="post" style="display: inline;" id="{{channel.source.hash}}-route">
+			<input type="hidden" name="action" value="route" />
+			<input type="hidden" name="source" value="{{channel.source.hash}}" />
+			<select name="outlet" onchange="$('#{{channel.source.hash}}-route').submit()">
+				{% for outlet in outlets %}
+				<option value="{{outlet.hash}}" {% ifequal channel.outlet.hash outlet.hash %}selected="selected"{% endifequal %}>{{outlet.name}}</option>
+				{% endfor %}
+			</select>
+		</form>
     <!--form action="/dashboard/sources" method="post" style="display: inline;">
       <input type="hidden" name="action" value="disable" />
       <input type="hidden" name="source" value="{{ channel.source.hash }}">
@@ -15,15 +22,9 @@
   {% endfor %}
 </ul>
 
-<h4>Pending Sources</h4>
-<ul>
-  {% for channel in pending_channels %}
-  <li>{{ channel.source.source_name }} 
-    <form action="/sources" method="post" style="display: inline;">
-      <input type="hidden" name="action" value="approve" />
-      <input type="hidden" name="source" value="{{ channel.source.hash }}">
-      <input type="submit" value="Approve"></form></li>
-  {% endfor %}
-</ul>
 
+{% endblock %}
+{% block pagetip %}
+<p>Sources are notification senders. They are generally websites or web apps, but they can also be people. Anybody with a notify.io account can be a source. This page lets you manage your sources, allowing or disallowing their ability to send notifications and eventually being able to filter their notifications in various ways.</p>
+<p>You can view a <a href="/sources/available">list of available sources here.</a></p>
 {% endblock %}

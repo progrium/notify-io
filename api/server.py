@@ -63,9 +63,10 @@ class ReplayResource(Resource):
 
     def replay_success(self, page_contents, request):
         if page_contents[0:3] != '202':
-            hash, page_contents = page_contents.split('\n\n') # Could be better
-            for listener in listeners[hash]:
-                listener.queue.put(page_contents)
+            hashes, message = page_contents.split(':', 1)
+            for hash in hashes.split(','):
+                for listener in listeners[hash]:
+                    listener.queue.put(message.strip())
             request.write("OK\n")
         else:
             request.write(page_contents)
@@ -110,8 +111,10 @@ class NotifyResource(Resource):
 
     def notify_success(self, page_contents, hash, request):
         if page_contents[0:3] != '202':
-            for listener in listeners[hash]:
-                listener.queue.put(page_contents)
+            hashes, message = page_contents.split(':', 1)
+            for hash in hashes.split(','):
+                for listener in listeners[hash]:
+                    listener.queue.put(message.strip())
             request.write("OK\n")
         else:
             request.write(page_contents)
@@ -128,17 +131,7 @@ class ListenResource(Resource):
         hash = request.path.split('/')[-1].lower()
         if not hash or hash == 'listen':
             return "No hash"
-        api_key = request.args.get('api_key', [request.getUser()])[0]
-        if not api_key:
-            return "No api key"
-            
-        client.getPage(url='%s/api/auth/%s?api_key=%s' % (NOTIFY_WWW, hash, api_key)) \
-            .addCallback(self.start_stream, hash, request) \
-            .addErrback(self.write_error, request)
         
-        return server.NOT_DONE_YET
-        
-    def start_stream(self, whatever, hash=None, request=None):    
         if not hash in listeners:
             listeners[hash] = []
         request.queue = Queue(lambda m: self._send(request, m))
@@ -147,12 +140,9 @@ class ListenResource(Resource):
         request.setHeader('Content-Type', 'application/json')
         request.setHeader('Transfer-Encoding', 'chunked')
         request.notifyFinish().addBoth(self._finished, hash, request)
-    
-    def write_error(self, failure, request):
-        request.write(str(failure))
-        request.finish()
-
-    
+        
+        return server.NOT_DONE_YET
+        
     def _finished(self, whatever, hash=None, request=None):
         listeners[hash].remove(request)
 

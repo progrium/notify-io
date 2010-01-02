@@ -9,27 +9,25 @@
 <div id="dashboard-wrapper">
 <div id="sidebar">
 	{% if pending_channels %}
-  <p>
+  <div>
     <h3>Pending Approvals</h3>
     <ul>
       {% for channel in pending_channels %}
       <li>{{ channel.source.source_name }} <form action="/sources" method="post" style="display: inline;"><input type="hidden" name="action" value="approve" /><input type="hidden" name="source" value="{{ channel.source.hash }}"><input type="submit" value="Approve"></form></li>
       {% endfor %}
     </ul>
-  </p>
+  </div>
   {% endif %}
 
-  <p>
+  <div>
     <h3>Recent Notifications</h3>
     TODO: Show a few recent notifications from History.
-  </p>
+  </div>
 
-  <p>
-    <h3>Download Client</h3>
-    The current prototype client is a Python script dependent on <a href="http://twistedmatrix.com/trac/wiki/Downloads">Twisted</a> and the <a href="http://growl.info/documentation/developer/">Growl Python library</a>.<br />
-    <br />
-    <a href="/download/notifyio-client.py">Download Client for your Account</a>
-  </p>
+  <div id="pagetip">
+    <h3>About this page</h3>
+    {% block pagetip %}{% endblock %}
+  </div>
   
 </div>
 <div id="panel">
