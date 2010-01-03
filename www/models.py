@@ -82,6 +82,11 @@ class Outlet(db.Model):
         if not name:
             name = self.type().default_name(self._tmp_params)
         self.name = name
+    
+    def setup(self, params):
+        self.set_params(params)
+        self.set_name()
+        self.type().setup(self)
 
 
 class Channel(db.Model):

@@ -114,8 +114,7 @@ class OutletsHandler(DashboardHandler):
         action = self.request.get('action')
         if action == 'add':
             o = Outlet(target=self.account, type_name=self.request.get('type'))
-            o.set_params(self.request.POST)
-            o.set_name()
+            o.setup(self.request.POST)
             o.put()
         elif action == 'remove':
             o = Outlet.get_by_hash(self.request.get('outlet'))

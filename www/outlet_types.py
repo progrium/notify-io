@@ -16,6 +16,10 @@ class BaseOutlet(object):
         pass
     
     @classmethod
+    def setup(cls, outlet):
+        pass
+    
+    @classmethod
     def dispatch(cls, notice):
         return ":".join([notice.channel.outlet.hash, notice.to_json()])
 
@@ -56,10 +60,16 @@ class Jabber(BaseOutlet):
         return "Send IM to %s" % params['jid']
     
     @classmethod
+    def setup(cls, outlet):
+        jid = outlet.get_param('jid')
+        xmpp.send_invite(jid)
+    
+    @classmethod
     def dispatch(cls, notice):
         jid = notice.channel.outlet.get_param('jid')
-        body = "%s: %s" % (notice.title, notice.text) if notice.title else notice.text 
-        xmpp.send_message(jid, "%s %s [%s]" % (body, notice.link or '', notice.source.source_name))
+        if xmpp.get_presence(jid):
+            body = "%s: %s" % (notice.title, notice.text) if notice.title else notice.text 
+            xmpp.send_message(jid, "%s %s [%s]" % (body, notice.link or '', notice.source.source_name))
         return None
 
 class Webhook(BaseOutlet):
