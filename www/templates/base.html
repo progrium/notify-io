@@ -8,7 +8,7 @@
     <div id="wrapper">
       <div id="header">
         <div class="width">
-          <a href="/"><img src="/static/notifyio-alpha.png" /></a>
+          <a href="/"><img id="logo" src="/static/notifyio-alpha.png" /></a>
           <div id="account">
             {% if user %}
             {{ user.nickname }} | <a href="{{ logout_url }}">Logout</a>
@@ -18,10 +18,10 @@
           </div><br /><br />
           {% if user %}
           <ul id="menu">
-            <li><a class="{% block history_selected %}{% endblock %}" href="/history">History</a></li>
-            <li><a class="{% block sources_selected %}{% endblock %}" href="/sources">Sources</a></li>
-            <li><a class="{% block notifiers_selected %}{% endblock %}" href="/outlets">Outlets</a></li>
-            <li><a class="{% block settings_selected %}{% endblock %}" href="/settings">Settings</a></li>
+            <li><a class="{% block history_selected %}{% endblock %}" href="/history"><img src="/static/icons/history.png" /> History</a></li>
+            <li><a class="{% block sources_selected %}{% endblock %}" href="/sources"><img src="/static/icons/sources.png" /> Sources</a></li>
+            <li><a class="{% block notifiers_selected %}{% endblock %}" href="/outlets"><img src="/static/icons/outlets.png" /> Outlets</a></li>
+            <li><a class="{% block settings_selected %}{% endblock %}" href="/settings"><img src="/static/icons/settings.png" /> Settings</a></li>
           </ul>
           {% endif %}
         </div>

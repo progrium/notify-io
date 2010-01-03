@@ -129,7 +129,7 @@ class Notification(db.Model):
     source = db.ReferenceProperty(Account, collection_name='source_notifications')
     
     title = db.StringProperty()
-    text = db.TextProperty(required=True)
+    text = db.StringProperty(multiline=True, required=True)
     link = db.StringProperty()
     icon = db.StringProperty()
     sticky = db.StringProperty()
@@ -149,6 +149,10 @@ class Notification(db.Model):
         return str(self.channel.outlet.type().dispatch(self))
     
     @classmethod
+    def get_by_hash(cls, hash):
+        return cls.all().filter('hash = ', hash).get()
+
+    @classmethod
     def get_history_by_target(cls, target):
         return cls.all().filter('target =', target).order('-created')
     
@@ -156,7 +160,7 @@ class Notification(db.Model):
         return self.icon or self.source.source_or_default_icon()
     
     def to_dict(self):
-        o = {'text': self.text}
+        o = {'text': self.text.replace('\r\n', '\n')}
         for arg in ['title', 'link', 'icon', 'sticky']:
             value = getattr(self, arg)
             if value:

@@ -4,13 +4,31 @@
 <h2>Your Notification History</h2>
 
 {% if notifications %}
-<ul>
   {% for notice in notifications %}
-  <li style="margin-bottom: 10px;">{% if notice.icon %}<img src="{{notice.icon}}" width="32" height="32" style="float: left; margin-right: 5px;"/>{% endif %} {% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} {{ notice.text|striptags }}<br /><small>from <a href="/sources/{{notice.source.hash}}">{{ notice.source.source_name }}</a> at {{ notice.created }} | <form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" target="replay" method="post" style="display: inline;"><input type="submit" value="Replay" /></form></small></li>
+	<table style="margin-bottom: 10px; margin-top: 4px;">
+		<tr>
+			<td valign="top"><img src="{{notice.icon_with_default}}" width="40" height="40" style="margin-right: 5px;"/></td>
+			<td valign="top">
+				{% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} 
+				{{ notice.text|striptags }}<br />
+				<small style="color: #555;"><a href="/sources/{{notice.source.hash}}" style="color: #555;">{{ notice.source.source_name }}</a> {{ notice.created|timesince|shortago }} </small>
+				
+				<form action="/history" method="post" style="display: inline;">
+					<input type="hidden" name="action" value="delete" />
+					<input type="hidden" name="notification" value="{{notice.hash}}" />
+					<input type="image" src="/static/icons/delete.png" title="Delete" onclick="return confirm('Are you sure you want to delete this notification from your history?')" /></form>
+					
+				<form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" target="replay" method="post" style="display: inline;"><input type="image" src="/static/icons/replay.png" title="Replay" /></form>
+				{% if notice.link %}
+				<a href="{{ notice.link }}" target="_blank" title="Follow link"><img src="/static/icons/link.png" /></a>
+				{% endif %}
+			</td></tr>
+	</table>
   {% endfor %}
-</ul>
-<iframe name="replay" style="margin-left: 20px; width: 0px; height: 0px;"></iframe>
+	<iframe name="replay" style="margin-left: 20px; width: 0px; height: 0px;"></iframe>
+	
 {% else %}
+
 Looks like you don't have any notifications! You may want to download the client using the link to the right. Once running, you should get a welcome notification.<br />
 <br />
 Actually that's a lie. We won't send you a welcome notification. This is pre-alpha! We haven't figured out how to send notifications from us given our current data model.

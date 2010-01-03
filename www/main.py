@@ -49,8 +49,16 @@ class SettingsHandler(DashboardHandler):
 class HistoryHandler(DashboardHandler):
     @login_required
     def get(self):
-        notifications = Notification.get_history_by_target(self.account).fetch(100)
+        notifications = Notification.get_history_by_target(self.account).fetch(50)
         self.render('templates/history.html', locals())
+    
+    def post(self):
+        action = self.request.get('action')
+        if action == 'delete':
+            notice = Notification.get_by_hash(self.request.get('notification'))
+            if self.account.key() == notice.target.key():
+                notice.delete()
+        self.redirect('/history')
 
 class SourcesHandler(DashboardHandler):
     @login_required
@@ -114,6 +122,12 @@ class OutletsHandler(DashboardHandler):
             o.delete()
         self.redirect('/outlets')
 
+def redirect_to(path):
+    class redirector(webapp.RequestHandler):
+        def get(self):
+            self.redirect(path)
+    return redirector
+
 def main():
     application = webapp.WSGIApplication([
         ('/', MainHandler), 
@@ -123,6 +137,7 @@ def main():
         ('/history', HistoryHandler),
         ('/sources.*', SourcesHandler),
         ('/outlets.*', OutletsHandler),
+        ('/dashboard/history', redirect_to('/history')),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 

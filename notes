@@ -10,10 +10,8 @@ TODO
 
  -write page tips
  -require enabled source+name before allowing notify (+setting validation)
- -delete in history
  -sort sources by traffic
  -allow rename outlets
- -add icons to tabs
 
 BUGS
  -random stream server fail with 500 (but with 200)

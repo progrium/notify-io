@@ -16,7 +16,7 @@ select { width: 160px;}
     background: #88888C;
     height: 80px;
 }   
-#header img {float: left; margin-top: 10px; border: 0px;}
+#header #logo {float: left; margin-top: 10px; border: 0px;}
 #header #account { float: right; margin-top: 10px; }
 #header a { color: white; }
 
@@ -51,8 +51,9 @@ select { width: 160px;}
 #menu li { display: inline; }
 #menu li a { 
     padding: 6px;  background: #8A9C9B; color: white; text-decoration: none; 
-    padding-left: 10px; padding-right: 10px;
+    padding-right: 10px;
 }
+#menu li a img { margin-bottom: -2px; }
 #menu li a.selected { background: #9CB38B; }
 #panel { 
     background: white; width: 698px; padding: 10px; padding-top: 5px; margin-top: 20px; min-height: 500px;
