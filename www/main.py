@@ -137,6 +137,8 @@ def main():
         ('/sources.*', SourcesHandler),
         ('/outlets.*', OutletsHandler),
         ('/dashboard/history', redirect_to('/history')),
+        ('/dashboard/settings', redirect_to('/settings')),
+        ('/dashboard/sources', redirect_to('/sources')),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
