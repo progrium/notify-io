@@ -22,7 +22,8 @@ class MainHandler(RequestHandler):
 
 class GetStartedHandler(RequestHandler):
     def get(self):
-        start_outlet = self.account.get_default_outlet()
+        if self.account:
+            start_outlet = self.account.get_default_outlet()
         self.render('templates/getstarted.html', locals())
         
 class SourcesAvailableHandler(RequestHandler):

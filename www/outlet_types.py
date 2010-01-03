@@ -43,8 +43,8 @@ class Email(BaseOutlet):
     def dispatch(cls, notice):
         email = notice.channel.outlet.get_param('email')
         mail.send_mail(sender="%s <no-reply@notify-io.appspotmail.com>" % notice.source.source_name, to=email, \
-            subject="[Notification] %s" % notice.title or notice.text, \
-            body="%s\n\n%s" % (notice.text, notice.link))
+            subject="[Notification] %s" % (notice.title or notice.text), \
+            body="%s\n%s\n\n---\nSent by Notify.io" % (notice.text, (notice.link or '')))
         return None
 
 class Jabber(BaseOutlet):
