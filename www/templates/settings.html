@@ -13,22 +13,41 @@
   <p>
   <input type="checkbox" value="true" name="source_enabled" {% if account.source_enabled %}checked="checked"{% endif %}/> Yes, I want to send notifications with this account<br />
   <p style="margin-left: 10px;">
-  Name: <input type="text" name="source_name" {% if account.source_name %}value="{{account.source_name}}" {% endif %}/><br />
-	Website URL: <input type="text" name="source_url" {% if account.source_icon %}value="{{account.source_url}}" {% endif %}/><br />
-  Icon URL: <input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/><br />
+	<table>
+		<tr>
+			<td align="right">Name:</td>
+			<td><input type="text" name="source_name" {% if account.source_name %}value="{{account.source_name}}" {% endif %}/></td></tr>
+		<tr>
+			<td align="right">Website URL:</td>
+			<td><input type="text" name="source_url" {% if account.source_icon %}value="{{account.source_url}}" {% endif %}/></td></tr>
+  	<tr>
+			<td align="right">Icon URL:</td>
+			<td><input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/></td></tr>
+	</table>
   </p>
   <input type="submit" value="Save" />
 </p>
 </form>
 
-<h3>Debug - Test Notify</h3>
+<h3>Debug</h3>
 <form target="debug" action="http://{{ account.api_key }}@{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
-  Title: <input type="text" name="title" /><small>(Optional)</small><br />
-  Icon URL: <input type="text" name="icon" /><small>(Optional)</small><br />
-  Link URL: <input type="text" name="link" /><small>(Optional)</small><br />
-  Text:<br />
-  <textarea name="text"></textarea><br />
-  <input type="checkbox" name="sticky" value="true" /> Sticky?<br />
-  <input type="submit" value="Notify"><iframe name="debug" style="margin-left: 20px; width: 0px; height: 0px;"></iframe>
+	<table>
+		<tr>
+			<td align="right">Text:</td>
+			<td><textarea name="text"></textarea></td></tr>
+		<tr>
+			<td align="right">Title:</td>
+			<td><input type="text" name="title" /><small>(Optional)</small></td></tr>
+		<tr>
+  		<td align="right">Icon URL:</td>
+			<td><input type="text" name="icon" /><small>(Optional)</small></td></tr>
+		<tr>
+			<td align="right">Link URL:</td>
+			<td><input type="text" name="link" /><small>(Optional)</small></td></tr>
+		<tr>
+			<td>&nbsp;</td><td><input type="checkbox" name="sticky" value="true" /> Sticky?</td></tr>
+		<tr>
+			<td>&nbsp;</td><td><input type="submit" value="Notify"><iframe name="debug" style="margin-left: 20px; width: 0px; height: 0px;"></iframe></td></tr>
+	</table>
 </form>
 {% endblock %}

@@ -87,7 +87,7 @@ class Outlet(db.Model):
 class Channel(db.Model):
     target = db.ReferenceProperty(Account, required=True, collection_name='channels_as_target')
     source = db.ReferenceProperty(Account, required=True, collection_name='channels_as_source')
-    outlet = db.ReferenceProperty(Outlet, required=True)
+    outlet = db.ReferenceProperty(Outlet)
     count = db.IntegerProperty(default=0)
 
     status = db.StringProperty(required=True, default='pending')

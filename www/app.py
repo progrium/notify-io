@@ -33,13 +33,25 @@ class RequestHandler(webapp.RequestHandler):
                 
                 self.account = Account()
                 self.account.set_hash_and_key()
-                self.account.source_name = self.user.nick() # More useful default than None
+                #self.account.source_name = self.user.nick() # More useful default than None
                 self.account.put()
                 
                 # Create default Desktop Notifier
                 o = Outlet(target=self.account, type_name='DesktopNotifier')
                 o.set_name("Default Desktop Notifier")
                 o.put()
+             
+            # This is to update existing accounts before outlets   
+            if not self.account.get_default_outlet():
+                # Create default Desktop Notifier
+                o = Outlet(target=self.account, type_name='DesktopNotifier')
+                o.set_name("Default Desktop Notifier")
+                o.put()
+                for channel in Channel.get_all_by_target(self.account):
+                    if not channel.outlet:
+                        channel.outlet = o
+                        channel.put()
+                
         else:
             self.logout_url = None
             self.account = None

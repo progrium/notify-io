@@ -20,6 +20,8 @@ BUGS
  -random stream server fail with 500 (but with 200)
  -nio doesn't reconnect when server restarts
  -nio doesn't make connection when new listenURL is added
+ -nio callback doesn't work without title
+ -None in email notifications
 
 OUTLETS
  -sms
