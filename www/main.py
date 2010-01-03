@@ -119,6 +119,12 @@ class OutletsHandler(DashboardHandler):
         elif action == 'remove':
             o = Outlet.get_by_hash(self.request.get('outlet'))
             o.delete()
+        elif action == 'rename':
+            name = self.request.get('name')
+            if name:
+                o = Outlet.get_by_hash(self.request.get('outlet'))
+                o.name = name
+                o.put()
         self.redirect('/outlets')
 
 def redirect_to(path):

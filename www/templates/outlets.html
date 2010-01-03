@@ -2,7 +2,7 @@
 {% block notifiers_selected %}selected{% endblock %}
 {% block dashboard %}
 <h2>Your Notification Outlets</h2>
-<div id="add-form" style="padding: 5px; background: #E5E5E5; margin-bottom: 10px; display: none;">
+<div id="outlet-form" style="padding: 5px; background: #E5E5E5; margin-bottom: 10px; display: none;">
 </div>
 
 <div style="float: right; width: 200px;">
@@ -18,20 +18,31 @@
 					<input type="hidden" name="action" value="add" />
 					<input type="hidden" name="type" value="{{ t.type }}" />
 					<input type="submit" value="Add {{ t.name }}" /> 
-					<a href="javascript:$('#add-form').css('display','none')" style="font-size: smaller;">Cancel</a>
+					<a href="javascript:hide()" style="font-size: smaller;">Cancel</a>
 				</form>
-			</div></li>
+			</div>
+			</li>
 	{% endfor %}
 </ul>	
 </div>
 
 <ul>
 	{% for outlet in outlets %}
-	<li><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> {{ outlet.name }} <a href="javascript:remove('{{ outlet.hash }}')" style="font-size: smaller;">Remove</a>
+	<li><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> {{ outlet.name }} <a href="javascript:remove('{{ outlet.hash }}')" style="font-size: smaller;">Remove</a> <a href="javascript:rename('{{outlet.hash}}')" style="font-size:smaller;">Rename</a>
 		<form id="{{ outlet.hash }}-remove" action="/outlets" method="post" style="display: inline;">
 			<input type="hidden" name="action" value="remove" />
 			<input type="hidden" name="outlet" value="{{ outlet.hash }}" />
-		</form></li>
+		</form>
+		<div id="{{ outlet.hash }}-rename" style="display: none;">
+			<form action="/outlets" method="post">
+				Rename: <input type="text" name="name" value="{{ outlet.name }}" /> &nbsp;
+				<input type="hidden" name="action" value="rename" />
+				<input type="hidden" name="outlet" value="{{ outlet.hash }}" />
+				<input type="submit" value="Save" /> 
+				<a href="javascript:hide()" style="font-size: smaller;">Cancel</a>
+			</form>
+		</div>
+		</li>
 	{% endfor %}
 </ul>
 
@@ -40,9 +51,17 @@ function remove(outletHash) {
 	$('#'+outletHash+'-remove').submit();
 }
 function add(type) {
-	$('#add-form').html($('#'+type+'-add').html());
-	$('#add-form').css('display', 'block');
-	$('#add-form input:first').focus();
+	$('#outlet-form').html($('#'+type+'-add').html());
+	$('#outlet-form').css('display', 'block');
+	$('#outlet-form input:first').focus();
+}
+function rename(hash) {
+	$('#outlet-form').html($('#'+hash+'-rename').html());
+	$('#outlet-form').css('display', 'block');
+	$('#outlet-form input:first').focus();
+}
+function hide() {
+	$('#outlet-form').css('display','none');
 }
 </script>
 {% endblock %}
