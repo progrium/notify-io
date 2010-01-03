@@ -49,7 +49,7 @@ class SettingsHandler(DashboardHandler):
 class HistoryHandler(DashboardHandler):
     @login_required
     def get(self):
-        notifications = Notification.get_history_by_target(self.account).fetch(50)
+        notifications = Notification.get_history_by_target(self.account).fetch(20)
         self.render('templates/history.html', locals())
     
     def post(self):
@@ -63,7 +63,7 @@ class HistoryHandler(DashboardHandler):
 class SourcesHandler(DashboardHandler):
     @login_required
     def get(self):
-        outlets = Outlet.all().filter('target =', self.account)
+        outlets = Outlet.all().filter('target =', self.account).fetch(100)
         if len(self.request.path.split('/')) > 2:
             source = Account.get_by_hash(self.request.path.split('/')[-1])
             channel = Channel.get_by_source_and_target(source, self.account)
