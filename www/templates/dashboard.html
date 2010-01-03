@@ -27,7 +27,7 @@
 				<td valign="top"><img src="{{notice.icon_with_default}}" width="25" height="25" style="margin-right: 2px;"/></td>
 				<td valign="top" style="font-size: 12px;">
 					{% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} 
-					{{ notice.text|striptags }} {% if notice.link %}<a href="{{notice.link}}" target="_blank">...</a>{% endif %}<br />
+					{{ notice.text|striptags }} {% if notice.link %}<a href="{{notice.link}}" target="_blank" title="Follow link"><img src="/static/icons/go.png" style="margin-top: -2px; position: absolute;" /></a>{% endif %}<br />
 					<small style="color: #666;"><a href="/sources/{{notice.source.hash}}" style="color: #666;">{{ notice.source.source_name }}</a> {{ notice.created|timesince|shortago }} </small>
 				</td></tr>
 		</table>

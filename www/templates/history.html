@@ -10,7 +10,7 @@
 			<td valign="top"><img src="{{notice.icon_with_default}}" width="40" height="40" style="margin-right: 5px;"/></td>
 			<td valign="top">
 				{% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} 
-				{{ notice.text|striptags }}<br />
+				{{ notice.text|striptags }} {% if notice.link %}<a href="{{ notice.link }}" target="_blank" title="Follow link"><img src="/static/icons/link.png" style="position: absolute;"/></a>{% endif %}<br />
 				<small style="color: #555;"><a href="/sources/{{notice.source.hash}}" style="color: #555;">{{ notice.source.source_name }}</a> {{ notice.created|timesince|shortago }} </small>
 				
 				<form action="/history" method="post" style="display: inline;">
@@ -19,9 +19,7 @@
 					<input type="image" src="/static/icons/delete.png" title="Delete" onclick="return confirm('Are you sure you want to delete this notification from your history?')" style="margin-bottom: -3px; margin-left: 2px;" /></form>
 					
 				<form action="http://{{ api_host }}/{{ api_version }}/replay/{{notice.hash}}?api_key={{account.api_key}}" target="replay" method="post" style="display: inline;"><input type="image" style="margin-bottom: -3px;" src="/static/icons/replay.png" title="Replay" /></form>
-				{% if notice.link %}
-				<a href="{{ notice.link }}" target="_blank" title="Follow link"><img style="margin-bottom: -3px;" src="/static/icons/link.png" /></a>
-				{% endif %}
+				
 			</td></tr>
 	</table>
   {% endfor %}
