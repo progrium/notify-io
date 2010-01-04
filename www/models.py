@@ -151,7 +151,10 @@ class Notification(db.Model):
         super(Notification, self).__init__(*args, **kwargs) 
     
     def dispatch(self):
-        return str(self.channel.outlet.type().dispatch(self))
+        if self.channel.outlet:
+            return str(self.channel.outlet.type().dispatch(self))
+        else:
+            return ''
     
     @classmethod
     def get_by_hash(cls, hash):
