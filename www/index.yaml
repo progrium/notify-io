@@ -10,6 +10,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Channel
+  properties:
+  - name: status
+  - name: target
+  - name: count
+    direction: desc
+
 - kind: Notification
   properties:
   - name: target

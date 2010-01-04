@@ -8,6 +8,7 @@
 #content img { margin-bottom: -3px; }
 #content ul { list-style-type: none; margin-left: 5px; }
 #content ul li { margin-bottom: 4px; }
+#content ul li.outlet { margin-bottom: 10px; }
 </style>
 <div style="float: right; width: 200px;">
 <h4>Add Outlet</h4>
@@ -32,7 +33,17 @@
 
 <ul>
 	{% for outlet in outlets %}
-	<li><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> {{ outlet.name }} <a href="javascript:remove('{{ outlet.hash }}')" title="Delete"><img src="/static/icons/delete.png" /></a> <a href="javascript:rename('{{outlet.hash}}')" title="Rename"><img src="/static/icons/rename.png"></a>
+	<li class="outlet"><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> 
+		{{ outlet.name }} 
+		<a href="javascript:remove('{{ outlet.hash }}')" title="Delete"><img src="/static/icons/delete.png" /></a> 
+		<a href="javascript:rename('{{outlet.hash}}')" title="Rename"><img src="/static/icons/rename.png"></a><br />
+		<small style="color: #666; padding-left: 20px;">
+			{% if outlet.is_push %}
+				{{ outlet.push_destination.0|title }}: {{ outlet.push_destination.1 }}
+			{% else %}
+			  <a href="/outlets/{{ outlet.hash }}.ListenURL" style="color: #666;">Download Listen URL</a>
+			{% endif %}</small>
+		
 		<form id="{{ outlet.hash }}-remove" action="/outlets" method="post" style="display: inline;">
 			<input type="hidden" name="action" value="remove" />
 			<input type="hidden" name="outlet" value="{{ outlet.hash }}" />

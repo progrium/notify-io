@@ -2,10 +2,17 @@
 {% block sources_selected %}selected{% endblock %}
 {% block dashboard %}
 <h2>Your Notification Sources</h2>
+<style type="text/css">
+#content img { margin-bottom: -3px; width: 40px; height: 40px; float: left; margin-right: 5px; }
+#content ul { list-style-type: none; margin-left: 5px; }
+#content ul li { margin-bottom: 10px; }
+#content ul li select { margin-top: 4px; margin-left: 45px;}
+</style>
 <ul>
   {% for channel in enabled_channels %}
-  <li><img src="{{ channel.source.source_or_default_icon }}" /> <a href="/sources/{{channel.source.hash}}">{{ channel.source.source_name }}</a><br />
-		{{ channel.count }} notifications. Outlet: 
+  <li><img src="{{ channel.source.source_or_default_icon }}" /> 
+		<a href="/sources/{{channel.source.hash}}" style="font-size: large;">{{ channel.source.source_name }}</a><br /> 
+		<small style="color: #666;">{{ channel.count }} notifications received</small><br />
 		<form action="/sources" method="post" style="display: inline;" id="{{channel.source.hash}}-route">
 			<input type="hidden" name="action" value="route" />
 			<input type="hidden" name="source" value="{{channel.source.hash}}" />

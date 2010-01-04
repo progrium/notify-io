@@ -68,6 +68,15 @@ class Outlet(db.Model):
     def type(self):
         return outlet_types.get(self.type_name)
     
+    def is_push(self):
+        return self.type().push
+    
+    def push_destination(self):
+        if self.is_push():
+            return [self.type().fields[0], self.get_param(self.type().fields[0])]
+        else:
+            return None
+    
     def get_param(self, key):
         return simplejson.loads(self.params)[key]
     

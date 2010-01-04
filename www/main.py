@@ -69,7 +69,7 @@ class SourcesHandler(DashboardHandler):
             channel = Channel.get_by_source_and_target(source, self.account)
             self.render('templates/source.html', locals())
         else:
-            enabled_channels = Channel.get_all_by_target(self.account).filter('status =', 'enabled')
+            enabled_channels = Channel.get_all_by_target(self.account).order('-count').filter('status =', 'enabled')
             self.render('templates/sources.html', locals())
     
     def post(self):

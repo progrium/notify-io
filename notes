@@ -12,6 +12,7 @@ TODO
  -require enabled source+name before allowing notify (+setting validation)
  -sort sources by traffic
  -show available sources from db (sorted by popularity)
+ -help wanted page
 
 BUGS
  -random stream server fail with 500 (but with 200)

@@ -1,5 +1,5 @@
 import wsgiref.handlers
-import hashlib, time, os
+import hashlib, time, os, re
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -12,6 +12,9 @@ from django.utils import simplejson
 from models import Account, Notification, Channel
 from config import API_HOST, API_VERSION
 from app import RequestHandler
+
+def strip_tags(value):
+    return re.sub(r'<[^>]*?>', '', value or '')
 
 class ReplayHandler(RequestHandler):
     def post(self): 
@@ -39,9 +42,9 @@ class NotifyHandler(RequestHandler):
             approval_notice = channel.get_approval_notice()
             
         if channel:
-            notice = Notification(channel=channel, text=self.request.get('text'), icon=source.source_icon)
+            notice = Notification(channel=channel, text=strip_tags(self.request.get('text')), icon=source.source_icon)
             for arg in ['title', 'link', 'icon', 'sticky']:
-                value = self.request.get(arg, None)
+                value = strip_tags(self.request.get(arg, None))
                 if value:
                     setattr(notice, arg, value)
             notice.put()
