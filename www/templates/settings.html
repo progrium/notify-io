@@ -30,7 +30,8 @@
 </form>
 
 <h3>Debug</h3>
-<form target="debug" action="http://{{ account.api_key }}@{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
+<form target="debug" action="http://{{ api_host }}/{{ api_version }}/notify/{{ account.hash }}" method="post">
+	<input type="hidden" name="api_key" value="{{ account.api_key }}" />
 	<table>
 		<tr>
 			<td align="right">Text:</td>
