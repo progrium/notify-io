@@ -10,6 +10,7 @@
 		<input type="hidden" name="action" value="route" />
 		<input type="hidden" name="source" value="{{channel.source.hash}}" />
 		<select name="outlet" onchange="$('#{{channel.source.hash}}-route').submit()" title="Outlet for source">
+			<option value="">None</option>
 			{% for outlet in outlets %}
 			<option value="{{outlet.hash}}" {% ifequal channel.outlet.hash outlet.hash %}selected="selected"{% endifequal %}>{{outlet.name}}</option>
 			{% endfor %}

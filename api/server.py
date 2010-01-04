@@ -9,7 +9,7 @@ import sys, simplejson, urllib
 try:
     if sys.argv[1] == '--dev':
         # Development
-        NOTIFY_WWW = 'http://localhost:8080'
+        NOTIFY_WWW = 'http://localhost:8081'
         PORT = 9090
 except IndexError:
     # Production

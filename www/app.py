@@ -42,16 +42,15 @@ class RequestHandler(webapp.RequestHandler):
                 o.put()
              
             # This is to update existing accounts before outlets   
-            o = self.account.get_default_outlet()
-            if not o:
+            if not self.account.get_default_outlet():
                 # Create default Desktop Notifier
                 o = Outlet(target=self.account, type_name='DesktopNotifier')
                 o.set_name("Default Desktop Notifier")
                 o.put()
-            for channel in Channel.get_all_by_target(self.account):
-                if not channel.outlet:
-                    channel.outlet = o
-                    channel.put()
+                for channel in Channel.get_all_by_target(self.account):
+                    if not channel.outlet:
+                        channel.outlet = o
+                        channel.put()
                 
         else:
             self.logout_url = None

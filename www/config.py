@@ -8,7 +8,7 @@ except:
 API_VERSION = 'v1'
 if is_dev:
     API_HOST = 'localhost:9090'
-    WWW_HOST = 'localhost:8080'
+    WWW_HOST = 'localhost:8081'
 else:
     API_HOST = 'api.notify.io'
     WWW_HOST = 'www.notify.io'
