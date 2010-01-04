@@ -1,18 +1,19 @@
 TODO
- -developer group roadmap page
  -screencast showcasing
   -email notifier with mailhooks
   -feednotifier
   -remindify
   -curl
   -facebook says
-  -
+  -outlets: webhook->postbin
+  -nio: hook->say
 
  -write page tips
  -require enabled source+name before allowing notify (+setting validation)
  -sort sources by traffic
  -show available sources from db (sorted by popularity)
  -help wanted page
+ -developer group roadmap page
 
 BUGS
  -random stream server fail with 500 (but with 200)
