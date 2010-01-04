@@ -8,9 +8,9 @@ TODO
   -outlets: webhook->postbin
   -nio: hook->say
 
- -write page tips
  -require enabled source+name before allowing notify (+setting validation)
- -sort sources by traffic
+
+ -write page tips
  -show available sources from db (sorted by popularity)
  -help wanted page
  -developer group roadmap page
@@ -18,7 +18,6 @@ TODO
 BUGS
  -random stream server fail with 500 (but with 200)
  -nio doesn't reconnect when server restarts
- -nio doesn't make connection when new listenURL is added
 
 OUTLETS
  -sms

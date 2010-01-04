@@ -14,16 +14,15 @@
 {% endblock %}
 {% block content %}
 <div id="gettingstarted">
-  {% if user %}
-  {% else %}
-  <div id="start-tip" style="margin-bottom: 20px;"><p>Alright, first thing's first! You need to login with your Google account. This creates your Notify.io account and makes sure you are ready for the rest of the process.</p>
+	<h2>How to install Notify.io on your Mac</h2>
+	{% if not user %}
+  <div id="start-tip" style="margin-bottom: 20px; margin-top: 10px;"><p><strong>Very first step!</strong> You need to login with your Google account. This creates your Notify.io account and makes sure you are ready for the rest of the process.</p>
   <h3><a href="{{ login_url }}">Login with Google</a></h3>
   </div>
   {% endif %}
-	<h2>How to install Notify.io on your Mac</h2>
 	<div class="step">
 		<h4>1. Download Nio, the Notify.io Mac client</h4>
-		<p><a href="/clients/nio-alpha.dmg">Click here</a> to start the download.</p>
+		<p><a href="http://notify-io.googlecode.com/files/nio-alpha.dmg">Click here</a> to start the download.</p>
 	</div>
 	<div class="step">
 		<h4>2. Drag the Nio icon into your Applications folder.</h4>
@@ -35,7 +34,7 @@
 	<div class="step">
 		<h4>4. Download and open the Desktop Notifier configuration for your account.</h4>
 		<p><a href="{% if start_outlet %}/outlets/{{ start_outlet.hash }}.ListenURL{% else %}{{login_url}}{% endif %}">Click here</a> to download. When asked, choose to Open the file. <br />
-			Make sure to open the file with Nio.app</p>
+			<small>(Make sure the file opens with Nio.app)</small></p>
 	</div>
 	<div class="step">
 		<h4>5. You're now ready to receive notifications from any Notify.io source!</h4>
