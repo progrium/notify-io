@@ -4,12 +4,16 @@
 <h2>Your Notification Outlets</h2>
 <div id="outlet-form" style="padding: 5px; background: #E5E5E5; margin-bottom: 10px; display: none;">
 </div>
-
+<style type="text/css">
+#content img { margin-bottom: -3px; }
+#content ul { list-style-type: none; margin-left: 5px; }
+#content ul li { margin-bottom: 4px; }
+</style>
 <div style="float: right; width: 200px;">
 <h4>Add Outlet</h4>
 <ul>
 	{% for t in types %}
-	<li><img src="/static/outlets/{{ t.type }}.png" /><a href="javascript:add('{{ t.type }}')">{{ t.name }}</a>
+	<li><img src="/static/outlets/{{ t.type }}.png" /> <a href="javascript:add('{{ t.type }}')">{{ t.name }}</a>
 			<div id="{{ t.type }}-add" style="display: none;">
 				<form action="/outlets" method="post">
 					{% for f in t.fields %}
@@ -28,7 +32,7 @@
 
 <ul>
 	{% for outlet in outlets %}
-	<li><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> {{ outlet.name }} <a href="javascript:remove('{{ outlet.hash }}')" style="font-size: smaller;">Remove</a> <a href="javascript:rename('{{outlet.hash}}')" style="font-size:smaller;">Rename</a>
+	<li><img src="/static/outlets/{{ outlet.type_name }}.png" title="{{ outlet.type.name }}" /> {{ outlet.name }} <a href="javascript:remove('{{ outlet.hash }}')" title="Delete"><img src="/static/icons/delete.png" /></a> <a href="javascript:rename('{{outlet.hash}}')" title="Rename"><img src="/static/icons/rename.png"></a>
 		<form id="{{ outlet.hash }}-remove" action="/outlets" method="post" style="display: inline;">
 			<input type="hidden" name="action" value="remove" />
 			<input type="hidden" name="outlet" value="{{ outlet.hash }}" />
@@ -48,7 +52,9 @@
 
 <script type="text/javascript">
 function remove(outletHash) {
-	$('#'+outletHash+'-remove').submit();
+	if (confirm("Are you sure you want to delete this outlet?")) {
+		$('#'+outletHash+'-remove').submit();
+	}
 }
 function add(type) {
 	$('#outlet-form').html($('#'+type+'-add').html());
