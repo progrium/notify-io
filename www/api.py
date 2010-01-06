@@ -1,5 +1,6 @@
 import wsgiref.handlers
 import hashlib, time, os, re
+import base64
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -67,10 +68,33 @@ class NotifyHandler(RequestHandler):
             self.error(404)
             self.response.out.write("404 Target or source not found")
 
+class HistoryHandler(webapp.RequestHandler):
+    def get(self):
+        try:
+            method, encoded = self.request.headers['AUTHORIZATION'].split()
+            if method.lower() == 'basic':
+                username, password = base64.b64decode(encoded).split(':')
+                account = Account.all().filter('api_key =', username).get()
+                if account:
+                    notifications = Notification.get_history_by_target(account).fetch(20)
+                    self.response.headers['Content-Type'] = 'application/json'
+                    def to_json(notice):
+                        o = notice.to_dict()
+                        o['created'] = notice.created.strftime('%a %b %d %H:%M:%S +0000 %Y')
+                        o['source_icon'] = notice.source.source_or_default_icon()
+                        return simplejson.dumps(o)
+                    self.response.out.write("[%s]" % ', '.join([to_json(n) for n in notifications]))
+                else:
+                    raise KeyError()
+        except KeyError:
+            self.response.headers['WWW-Authenticate'] = 'Basic realm="%s"' % 'Notify.io'
+            self.error(401)
+
 def main():
     application = webapp.WSGIApplication([
         ('/api/notify.*', NotifyHandler), 
         ('/api/replay.*', ReplayHandler), 
+        ('/api/history.json', HistoryHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
