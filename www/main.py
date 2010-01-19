@@ -70,6 +70,13 @@ class SourcesHandler(DashboardHandler):
             self.render('templates/source.html', locals())
         else:
             enabled_channels = Channel.get_all_by_target(self.account).order('-count').filter('status =', 'enabled')
+            # TODO: remove me after a while. this is to fix my poor reference management
+            for c in enabled_channels:
+                try:
+                    c.outlet
+                except:
+                    c.outlet = None
+                    c.put()
             self.render('templates/sources.html', locals())
     
     def post(self):

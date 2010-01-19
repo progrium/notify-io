@@ -65,6 +65,12 @@ class Outlet(db.Model):
     def get_by_hash(cls, hash):
         return cls.all().filter('hash = ', hash).get()
     
+    def delete(self):
+        for channel in Channel.get_all_by_target(self.target):
+            channel.outlet = None
+            channel.put()
+        super(Outlet, self).delete()
+    
     def type(self):
         return outlet_types.get(self.type_name)
     
