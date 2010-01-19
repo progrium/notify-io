@@ -86,9 +86,8 @@ class SourcesHandler(DashboardHandler):
         if action == 'approve':
             channel.status = 'enabled'
             channel.put()
-        elif action == 'disable':
-            channel.status = 'disabled'
-            # hmm?
+        elif action == 'delete':
+            channel.delete()
         elif action == 'route':
             outlet = Outlet.get_by_hash(self.request.get('outlet'))
             channel.outlet = outlet
