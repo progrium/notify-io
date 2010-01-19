@@ -24,6 +24,7 @@
 <h3 style="margin-top: 30px;">Source Notification History</h3>
 TODO: History on this page
 
+{% ifequal "foo" "bar" %}
 {% ifequal "enabled" channel.status %}
 <div style="float:right; font-size: smaller;"><a href="javascript:deleteSource()">Delete this source</a></div>
 <form id="delete-source" action="/sources" method="post">
@@ -37,6 +38,7 @@ TODO: History on this page
 		}
 	}
 </script>
+{% endifequal %}
 {% endifequal %}
 
 {% endblock %}
