@@ -5,6 +5,7 @@ body {
     margin: 0px;
     background: #88888C;
 }
+img { border: 0px; }
 select { width: 160px;}
 #wrapper {
     border-top: 8px solid #9CB38B;
