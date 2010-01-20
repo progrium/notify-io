@@ -5,85 +5,15 @@
     <h1>Get desktop notifications from web applications</h1>
     <h2>Notify.io is the open notification platform of the web</h2>
     
-    <img id="video" src="/static/video.png" />
-    <h4>You get pushed notifications</h4>
-    <ul>
-      <li><span>Works with major desktop notifiers</span></li>
-      <li><span>Instant setup for participating sites</span></li>
-      <li><span>History, filtering<span class="notyet">*</span>, and routings<span class="notyet">*</span></span></li>
-    </ul>
-    <a class="button" id="getstarted" href="/getstarted">Get Started</a>
-    <h4>Websites push notifications</h4>
-    <ul>
-      <li><span>Simple one-URL REST API</span></li>
-      <li><span>Hashed email-based user lookup</span></li>
-    </ul>
-    <a class="button" id="learnmore" href="http://groups.google.com/group/notify-io/web/developers">Learn More</a>
+    <center>
+			<div id="video"><object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,115,0' width='560' height='345'><param name='movie' value='http://screenr.com/Content/assets/screenr_1116090935.swf' ></param><param name='flashvars' value='i=40688' ></param><param name='allowFullScreen' value='true' ></param><embed src='http://screenr.com/Content/assets/screenr_1116090935.swf' flashvars='i=40688' allowFullScreen='true' width='560' height='345' pluginspage='http://www.macromedia.com/go/getflashplayer' ></embed></object></div>
+
+    <span id="outer"><a class="button" id="getstarted" href="/getstarted">Get Started with Notify.io</a></span><br />
+    <a href="http://groups.google.com/group/notify-io/web/developers" style="margin-top: -10px; display: block; font-size: smaller; color: gray;">or click here for Developers</a>
+</center>
   </div>
 </div>
 {% endblock %}
 {% block content %}
-<div id="main">
-  <div class="col1">
-    <h4>Supported Notifiers</h4>
-    <small>We're still in pre-alpha. This is our expected list.<br/> Currently implemented are in bold.</small>  
-    <ul style="margin-top: 10px;">
-      <li><span>OS X: <strong>Growl</strong></span></li>
-      <li><span>Windows: Growl for Windows, Snarl</span></li>
-      <li><span>iPhone: Prowl</span></li>
-      <li><span>Gnome: Mumbles</span></li>
-      <li><span>KDE: KNotify</span></li>
-      <li><span>Messaging: Email, Jabber, Twitter</span></li>
-      <li><span>API: WebHooks, <strong>Comet Stream</strong></span></li>
-    </ul>
-  </div>
 
-  <div class="col2">
-    <h4>Participating Sites</h4>
-    <ul>
-      <li><span><a href="http://feednotifier.org">Feed Notifier</a></span></li>
-      <li><span><a href="http://remindify.com">Remindify</a></span></li>
-      <li><span><a href="http://facebooksays.appspot.com/">Facebook Says</a></span></li>
-      <li><span>Twitter Notifier <small>coming soon!</small></span></li>
-      <li><span>UserVoice <a href="http://j.mp/2SD7e"><small>vote for it!</small></a></span></li>
-      <li><span>You!</span></li>
-    </ul>
-  </div>
-
-  <div class="col3">
-    <h4>Recent Updates</h4>
-    <script src="http://widgets.twimg.com/j/2/widget.js"></script>
-    <script>
-    new TWTR.Widget({
-      version: 2,
-      type: 'profile',
-      rpp: 3,
-      interval: 6000,
-      width: 250,
-      height: 300,
-      theme: {
-        shell: {
-          background: '#e5e5e5',
-          color: '#303030'
-        },
-        tweets: {
-          background: '#ffffff',
-          color: '#000000',
-          links: '#e89236'
-        }
-      },
-      features: {
-        scrollbar: false,
-        loop: false,
-        live: false,
-        hashtags: false,
-        timestamp: true,
-        avatars: false,
-        behavior: 'all'
-      }
-    }).render().setUser('notifyio').start();
-    </script>
-  </div>
-  <div style="float: right; margin-top: -40px; margin-right: 10px; font-size: smaller;" class="notyet">* = Not yet actually implemented. Pre-alpha!</div>
-</div>
 {% endblock %}

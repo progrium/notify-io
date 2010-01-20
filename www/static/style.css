@@ -22,7 +22,7 @@ select { width: 160px;}
 #header a { color: white; }
 
 #footer {
-    border-top: 4px solid #FCB360;
+    border-top: 7px solid #8A9C9B;
     background: #88888C;
     color: white;
     min-height: 55px;
@@ -34,7 +34,7 @@ select { width: 160px;}
 #footer a { color: white; }
 
 #content {
-    min-height: 200px;
+    /*min-height: 200px;*/
 }
 
 .loggedin #header { border-bottom: 8px solid #9CB38B;}
@@ -75,20 +75,21 @@ select { width: 160px;}
 
 #feature {
     background: #E5E5E5;
-    padding-bottom: 30px;
+    padding-bottom: 50px;
+    text-align: center;
 }
 #feature h1 { font-size: 32px; color: #222; padding-top: 25px; text-align: center;}
 #feature h2 { font-size: 24px; color: #333; font-weight: normal; text-align: center; padding-bottom: 35px;}
 #feature h4 { color: #222; font-size: 24px; margin-left: 10px;}
 #feature li { font-size: 20px; margin-left: 45px;}
 #feature li span { color: #333; padding-left: 2px;}
-#feature .button { width: 120px; height: 30px; color: white; display: block; margin: 15px; margin-left: 100px; -moz-border-radius: 8px;
--webkit-border-radius: 8px; font-size: 21px; text-decoration: none; padding-top: 4px; padding-left: 10px; }
+#feature .button { width: 320px; height: 30px; color: white; display: block; margin: 15px; -moz-border-radius: 8px;
+-webkit-border-radius: 8px; font-size: 22px; padding-top: 7px; text-decoration: none; padding-bottom: 2px; margin-bottom: 0px;  }
 #feature #getstarted { background: #FCB360; }
 #feature #learnmore { background: #8A9C9B; }
-#feature #video { float: right; width: 450px; height: 275px; border: 8px solid #9CB38B; margin-right: 10px;}
+#feature #video { width: 560px; height: 345px; border: 8px solid #9CB38B; margin-bottom: 40px;}
 
-#main { padding-top: 20px; color: #111; min-height: 350px; }
+#main { padding-top: 20px; color: #111; }
 #main h4 { font-size: 24px; font-weight: normal; margin-bottom: 5px;}
 #main li { margin-left: 25px;}
 
