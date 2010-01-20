@@ -4,8 +4,16 @@
 <h2>Account Settings</h2>
 <h3>API Information</h3>
 <p>
-  Userhash: {{ account.hash }} <br />
-  API key: {{ account.api_key }}
+  Userhash: {{ account.hash }} &lArr; md5({{ account.user.email|lower }})<br />
+  API key: <input type="text" value="{{ account.api_key }}" readonly="readonly" onclick="this.select()" size="32" /> <a href="javascript:resetKey()" style="font-size: smaller;">Reset Key</a>
+  <form id="resetForm" action="/settings" method="post"><input type="hidden" name="action" value="reset" /></form>
+	<script type="text/javascript">
+		function resetKey() {
+			if (confirm("This will break anything using your current API key. Are you sure?")) {
+				$('#resetForm').submit();
+			}
+		}
+	</script>
 </p>
 
 <form method="post">

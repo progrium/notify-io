@@ -11,7 +11,7 @@ from django.utils import simplejson
 from config import WWW_HOST
 import outlet_types
 
-def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
+def baseN(num,b=36,numerals="0123456789abcdefghijklmnopqrstuvwxyz"): 
     return ((num == 0) and  "0" ) or (baseN(num // b, b).lstrip("0") + numerals[num % b])
 
 class Account(db.Model):
@@ -43,8 +43,9 @@ class Account(db.Model):
         return Outlet.all().filter('target =', self).filter('type_name =', 'DesktopNotifier').order('-created').get()
 
     def set_hash_and_key(self):
-        self.hash = hashlib.md5(self.user.email()).hexdigest()
-        self.api_key = ''.join([baseN(abs(hash(time.time())), 36), baseN(abs(hash(self.hash)), 36)])
+        self.hash = hashlib.md5(self.user.email().lower()).hexdigest()
+        d = hashlib.md5(str(time.time()) + self.hash).hexdigest()
+        self.api_key = '-'.join([d[0:6], d[8:14], d[16:22], d[24:30]])
 
 class Outlet(db.Model):
     hash = db.StringProperty()

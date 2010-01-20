@@ -36,13 +36,16 @@ class SettingsHandler(DashboardHandler):
         self.render('templates/settings.html', locals())
     
     def post(self):
-        if self.request.get('source_enabled', None):
-            self.account.source_enabled = True
-            self.account.source_name = self.request.get('source_name', None)
-            self.account.source_url = self.request.get('source_url', None)
-            self.account.source_icon = self.request.get('source_icon', None)
+        if self.request.get('action') == 'reset':
+            self.account.set_hash_and_key()
         else:
-            self.account.source_enabled = False
+            if self.request.get('source_enabled', None):
+                self.account.source_enabled = True
+                self.account.source_name = self.request.get('source_name', None)
+                self.account.source_url = self.request.get('source_url', None)
+                self.account.source_icon = self.request.get('source_icon', None)
+            else:
+                self.account.source_enabled = False
         self.account.put()
         self.redirect('/settings')
 
