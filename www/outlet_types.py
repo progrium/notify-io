@@ -1,6 +1,7 @@
 from django.utils import simplejson
 from google.appengine.api import mail, xmpp, urlfetch
 import urllib
+from vendor import prowlpy 
 
 class BaseOutlet(object):
     name = None
@@ -23,6 +24,21 @@ class BaseOutlet(object):
     def dispatch(cls, notice):
         return ":".join([notice.channel.outlet.hash, notice.to_json()])
 
+class Prowl(BaseOutlet):
+	name = "Prowl"
+	fields = ['api_key']
+
+	@classmethod
+	def default_name(cls, params):
+		return "Prowl for iPhone" 
+
+	@classmethod
+	def dispatch(cls, notice):
+		api_key = notice.channel.outlet.get_param('api_key')
+		p = prowlpy.Prowl(api_key)
+		p.post(notice.source.source_name, notice.title or '', notice.text) 
+		return None
+
 class DesktopNotifier(BaseOutlet):
     name = "Desktop Notifier"
     push = False
@@ -34,6 +50,8 @@ class DesktopNotifier(BaseOutlet):
     @classmethod
     def dispatch(cls, notice):
         return ":".join([notice.channel.outlet.hash, notice.to_json()])
+
+
 
 class Email(BaseOutlet):
     name = "Email"
@@ -90,5 +108,5 @@ _globals = globals()
 def get(outlet_name):
     return _globals[outlet_name]
 
-available = ['DesktopNotifier', 'Email', 'Jabber', 'Webhook']
+available = ['DesktopNotifier', 'Email', 'Jabber', 'Webhook', 'Prowl']
 all = [get(o) for o in available]
