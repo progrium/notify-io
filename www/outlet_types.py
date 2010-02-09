@@ -1,7 +1,9 @@
 from django.utils import simplejson
 from google.appengine.api import mail, xmpp, urlfetch
 import urllib
-from vendor import prowlpy 
+import logging
+
+API_DOMAIN = 'https://prowl.weks.net/publicapi'
 
 class BaseOutlet(object):
     name = None
@@ -27,7 +29,7 @@ class BaseOutlet(object):
 class Prowl(BaseOutlet):
 	name = "Prowl"
 	fields = ['api_key']
-
+	
 	@classmethod
 	def default_name(cls, params):
 		return "Prowl for iPhone" 
@@ -35,9 +37,18 @@ class Prowl(BaseOutlet):
 	@classmethod
 	def dispatch(cls, notice):
 		api_key = notice.channel.outlet.get_param('api_key')
-		p = prowlpy.Prowl(api_key)
-		p.post(notice.source.source_name, notice.title or '', notice.text) 
+
+		data = {
+	            'apikey': api_key,
+	            'application': notice.source.source_name,
+	            'event': notice.title or '',
+	            'description': notice.text,
+	    }
+		params = urllib.urlencode(data)
+		result = urlfetch.fetch("%s/add/" % API_DOMAIN, method = 'POST', payload = params, headers={'Content-Type': 'application/x-www-form-urlencoded'})
 		return None
+		
+		
 
 class DesktopNotifier(BaseOutlet):
     name = "Desktop Notifier"
