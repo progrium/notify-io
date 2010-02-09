@@ -3,8 +3,6 @@ from google.appengine.api import mail, xmpp, urlfetch
 import urllib
 import logging
 
-API_DOMAIN = 'https://prowl.weks.net/publicapi'
-
 class BaseOutlet(object):
     name = None
     push = True
@@ -37,15 +35,14 @@ class Prowl(BaseOutlet):
 	@classmethod
 	def dispatch(cls, notice):
 		api_key = notice.channel.outlet.get_param('api_key')
-
 		data = {
-	            'apikey': api_key,
-	            'application': notice.source.source_name,
-	            'event': notice.title or '',
-	            'description': notice.text,
+		    'apikey': api_key,
+            'application': notice.source.source_name,
+            'event': notice.title or '',
+            'description': notice.text,
 	    }
-		params = urllib.urlencode(data)
-		result = urlfetch.fetch("%s/add/" % API_DOMAIN, method = 'POST', payload = params, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+		data = urllib.urlencode(data)
+		urlfetch.fetch("https://prowl.weks.net/publicapi/add/", method='POST', payload=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
 		return None
 		
 		
