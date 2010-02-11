@@ -15,7 +15,7 @@
 <ul>
 	{% for t in types %}
 	<li><img src="/static/outlets/{{ t.type }}.png" /> <a href="javascript:add('{{ t.type }}')">{{ t.name }}</a>
-			<div id="{{ t.type }}-add" style="display: none;">
+			<div id="{{ t.type }}-add" style="display: none; font-size: smaller;">
 				<form action="/outlets" method="post">
 					{% for f in t.fields %}
 					{{ f|title }}: <input type="text" name="{{ f }}" /> &nbsp;
@@ -23,7 +23,8 @@
 					<input type="hidden" name="action" value="add" />
 					<input type="hidden" name="type" value="{{ t.type }}" />
 					<input type="submit" value="Add {{ t.name }}" /> 
-					<a href="javascript:hide()" style="font-size: smaller;">Cancel</a>
+					<a href="javascript:hide()" style="font-size: smaller;">Cancel</a><br />
+					<span style="font-size: smaller; margin-top: 2px; color: gray;">{{t.help}}</span>
 				</form>
 			</div>
 			</li>

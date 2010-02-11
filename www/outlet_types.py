@@ -7,6 +7,7 @@ class BaseOutlet(object):
     name = None
     push = True
     fields = []
+    help = ""
     
     @classmethod
     def type(cls):
@@ -27,10 +28,11 @@ class BaseOutlet(object):
 class Prowl(BaseOutlet):
 	name = "Prowl"
 	fields = ['api_key']
+	help = 'Get your API key at the <a href="http://prowl.weks.net/">Prowl website</a>.'
 	
 	@classmethod
 	def default_name(cls, params):
-		return "Prowl for iPhone" 
+		return "An iPhone with Prowl" 
 
 	@classmethod
 	def dispatch(cls, notice):
@@ -98,6 +100,30 @@ class Jabber(BaseOutlet):
             xmpp.send_message(jid, "%s %s [%s]" % (body, notice.link or '', notice.source.source_name))
         return None
 
+class SMS(BaseOutlet):
+    name = "SMS"
+    fields = ['cellnumber', 'token']
+    help = 'Get an access token at <a href="http://textauth.com/">TextAuth</a>.'
+    
+    @classmethod
+    def default_name(cls, params):
+        return "Text messages to %s" % params['cellnumber']
+    
+    @classmethod
+    def dispatch(cls, notice):
+        cellnumber = notice.channel.outlet.get_param('cellnumber')
+        token = notice.channel.outlet.get_param('token')
+        if notice.title:
+            body = "%s: %s [%s]" % (notice.title, notice.text, notice.source.source_name) 
+        else:
+            body = "%s [%s]" % (notice.text, notice.source.source_name)
+        urlfetch.fetch('http://www.textauth.com/api/v1/send', method='POST', payload=urllib.urlencode({
+            'to': cellnumber,
+            'token': token,
+            'body': body,
+        }))
+        return None
+
 class Webhook(BaseOutlet):
     name = "Webhook"
     fields = ['url']
@@ -116,5 +142,5 @@ _globals = globals()
 def get(outlet_name):
     return _globals[outlet_name]
 
-available = ['DesktopNotifier', 'Email', 'Jabber', 'Webhook', 'Prowl']
+available = ['DesktopNotifier', 'Email', 'Jabber', 'SMS', 'Webhook', 'Prowl']
 all = [get(o) for o in available]
