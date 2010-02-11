@@ -107,7 +107,7 @@ class SMS(BaseOutlet):
     
     @classmethod
     def default_name(cls, params):
-        return "Text messages to %s" % params['cellnumber']
+        return "Send SMS to %s" % params['cellnumber']
     
     @classmethod
     def dispatch(cls, notice):
