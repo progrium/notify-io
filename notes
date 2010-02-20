@@ -1,13 +1,16 @@
 TODO
- -screencast showcasing
-  -email notifier with mailhooks
-  -feednotifier
-  -remindify
-  -curl
-  -facebook says
-  -outlets: webhook->postbin
-  -nio: hook->say
+ -notification tags
+ -multiple email support
 
+ -routing/filters
+ -openid support
+ -convenience libraries
+ -ad-hoc sources
+ -more clients
+ -allow clearing/optional history
+ -arbitrary fields
+ -improve source approval
+ -support data uris in Nio
  -require enabled source+name before allowing notify (+setting validation)
 
  -write page tips
@@ -20,9 +23,7 @@ BUGS
  -nio doesn't reconnect when server restarts
 
 OUTLETS
- -sms
  -irc
- -prowl
  -twitter (dm?)
  -telephone?
  -rss?
