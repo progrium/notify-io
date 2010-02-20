@@ -71,10 +71,6 @@ class Email(db.Model):
         else:
             raise Exception("pending_token is not set")
     
-    #def delete(self):
-    #    
-    #    super(Email, self).delete()
-    
     @classmethod
     def activate(cls, token):
         email = cls.all().filter('pending_token =', token).get()
@@ -84,6 +80,15 @@ class Email(db.Model):
             email.pending_token = None
             email.put()
     
+    @classmethod
+    def find_existing(cls, email):
+        hash = hashlib.md5(email).hexdigest()
+        found = Account.all().filter('hash =', hash).get()
+        if not found:
+            found = Account.all().filter('hashes =', hash).get()
+        if not found:
+            found = Email.all().filter('email =', email).get()
+        return found
 
 class Outlet(db.Model):
     hash = db.StringProperty()

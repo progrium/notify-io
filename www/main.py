@@ -44,9 +44,11 @@ class SettingsHandler(DashboardHandler):
         if action == 'reset':
             self.account.set_hash_and_key()
         elif action == 'addemail':
-            e = Email(email=self.request.get('email'), account=self.account)
-            e.send_activation_email()
-            e.put()
+            email = self.request.get('email')
+            if not Email.find_existing(email):
+                e = Email(email=self.request.get('email'), account=self.account)
+                e.send_activation_email()
+                e.put()
         elif action == 'removeemail':
             e = Email.get_by_id(int(self.request.get('email-id')))
             if e.account.key() == self.account.key():
