@@ -2,11 +2,12 @@ import hashlib, time, os
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
-from google.appengine.api import users
-from google.appengine.api import urlfetch
+from google.appengine.api import mail, users, urlfetch
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
+
+import logging
 
 from config import WWW_HOST
 import outlet_types
@@ -17,6 +18,7 @@ def baseN(num,b=36,numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
 class Account(db.Model):
     user = db.UserProperty(auto_current_user_add=True)
     hash = db.StringProperty()
+    hashes = db.StringListProperty()
     api_key = db.StringProperty()
     
     source_enabled = db.BooleanProperty()
@@ -46,6 +48,42 @@ class Account(db.Model):
         self.hash = hashlib.md5(self.user.email().lower()).hexdigest()
         d = hashlib.md5(str(time.time()) + self.hash).hexdigest()
         self.api_key = '-'.join([d[0:6], d[8:14], d[16:22], d[24:30]])
+
+class Email(db.Model):
+    account = db.ReferenceProperty(Account, required=True)
+    email = db.StringProperty(required=True)
+    pending_token = db.StringProperty()
+    
+    def __init__(self, *args, **kwargs):
+        kwargs['pending_token'] = kwargs.get('pending_token', hashlib.sha1(str(time.time())).hexdigest())
+        super(Email, self).__init__(*args, **kwargs)
+    
+    def hash(self):
+        return hashlib.md5(self.email).hexdigest()
+    
+    def send_activation_email(self):
+        if self.pending_token:
+            mail.send_mail(
+                sender="Notify.io <no-reply@notify-io.appspotmail.com>",
+                to=self.email,
+                subject="Activate additional email address",
+                body="Hello,\n\nClick on this link to activate this email address:\nhttp://%s/settings/activate/%s" % (WWW_HOST, self.pending_token))
+        else:
+            raise Exception("pending_token is not set")
+    
+    #def delete(self):
+    #    
+    #    super(Email, self).delete()
+    
+    @classmethod
+    def activate(cls, token):
+        email = cls.all().filter('pending_token =', token).get()
+        if email:
+            email.account.hashes.append(email.hash())
+            email.account.put()
+            email.pending_token = None
+            email.put()
+    
 
 class Outlet(db.Model):
     hash = db.StringProperty()

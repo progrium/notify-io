@@ -1,5 +1,5 @@
 import wsgiref.handlers
-import hashlib, time, os
+import hashlib, time, os, logging
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -9,7 +9,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
 
-from models import Account, Notification, Channel, Outlet
+from models import Account, Notification, Channel, Outlet, Email
 from app import RequestHandler, DashboardHandler
 from config import API_HOST, API_VERSION
 import outlet_types
@@ -33,11 +33,27 @@ class SourcesAvailableHandler(RequestHandler):
 class SettingsHandler(DashboardHandler):
     @login_required
     def get(self):
-        self.render('templates/settings.html', locals())
+        if 'activate' in self.request.path:
+            Email.activate(self.request.path.split('/')[-1])
+            self.redirect('/settings')
+        else:
+            self.render('templates/settings.html', locals())
     
     def post(self):
-        if self.request.get('action') == 'reset':
+        action = self.request.get('action')
+        if action == 'reset':
             self.account.set_hash_and_key()
+        elif action == 'addemail':
+            e = Email(email=self.request.get('email'), account=self.account)
+            e.send_activation_email()
+            e.put()
+        elif action == 'removeemail':
+            e = Email.get_by_id(int(self.request.get('email-id')))
+            if e.account.key() == self.account.key():
+                if e.hash() in self.account.hashes:
+                    self.account.hashes.remove(e.hash())
+                    self.account.put()
+                e.delete()
         else:
             if self.request.get('source_enabled', None):
                 self.account.source_enabled = True
@@ -147,7 +163,7 @@ def main():
         ('/', MainHandler), 
         ('/getstarted', GetStartedHandler),
         ('/sources/available', SourcesAvailableHandler),
-        ('/settings', SettingsHandler),
+        ('/settings.*', SettingsHandler),
         ('/history', HistoryHandler),
         ('/sources.*', SourcesHandler),
         ('/outlets.*', OutletsHandler),

@@ -2,22 +2,35 @@
 {% block settings_selected %}selected{% endblock %}
 {% block dashboard %}
 <h2>Account Settings</h2>
-<h3>API Information</h3>
+<h3>Manage Email Addresses</h3>
 <p>
-  Userhash: {{ account.hash }} &lArr; md5({{ account.user.email|lower }})<br />
-  API key: <input type="text" value="{{ account.api_key }}" readonly="readonly" onclick="this.select()" size="32" /> <a href="javascript:resetKey()" style="font-size: smaller;">Reset Key</a>
-  <form id="resetForm" action="/settings" method="post"><input type="hidden" name="action" value="reset" /></form>
-	<script type="text/javascript">
-		function resetKey() {
-			if (confirm("This will break anything using your current API key. Are you sure?")) {
-				$('#resetForm').submit();
-			}
-		}
-	</script>
+	<ul>
+		<li><strong>{{ account.user.email|lower }}</strong> (Primary)<br />
+			<small>MD5: {{ account.hash }}</small></li>
+		{% for email in account.email_set %}
+		<li><strong>{{ email.email|lower }}</strong> <a href="javascript:removeEmail('{{ email.key.id }}')" title="Delete"><img src="/static/icons/delete.png" /></a><br />
+			<small>{% if email.pending_token %}Pending activation{% else %}MD5: {{ email.hash }}{% endif %}</small>
+			<form id="{{ email.key.id }}-remove" action="/settings" method="post" style="display: inline;">
+				<input type="hidden" name="action" value="removeemail" />
+				<input type="hidden" name="email-id" value="{{ email.key.id }}" />
+			</form></li>
+		{% endfor %}
+  </ul>
+	<div style="padding-left: 25px; font-size: smaller;">
+		<form action="/settings" method="post" id="add-email" style="display: none;">
+			<input type="hidden" name="action" value="addemail" />
+			<input id="email-field" type="text" name="email" /> <input type="submit" value="Add" /> <a href="javascript:cancelEmail()">Cancel</a>
+		</form>
+	  <a href="javascript:addEmail()" id="add-email-link">Add Email Address</a>
+	</div>
 </p>
 
 <form method="post">
   <h3>Source Settings</h3>
+	<p>
+	API key: <input type="text" value="{{ account.api_key }}" readonly="readonly" onclick="this.select()" size="32" /> <a href="javascript:resetKey()" style="font-size: smaller;">Reset Key</a>
+  <form id="reset-form" action="/settings" method="post"><input type="hidden" name="action" value="reset" /></form>
+	</p>
   <p>
   <input type="checkbox" value="true" name="source_enabled" {% if account.source_enabled %}checked="checked"{% endif %}/> Yes, I want to send notifications with this account<br />
   <p style="margin-left: 10px;">
@@ -32,6 +45,7 @@
 			<td align="right">Icon URL:</td>
 			<td><input type="text" name="source_icon" {% if account.source_icon %}value="{{account.source_icon}}" {% endif %}/></td></tr>
 	</table>
+	
   </p>
   <input type="submit" value="Save" />
 </p>
@@ -59,4 +73,26 @@
 			<td>&nbsp;</td><td><input type="submit" value="Notify"><iframe name="debug" style="margin-left: 20px; width: 0px; height: 0px;"></iframe></td></tr>
 	</table>
 </form>
+
+<script type="text/javascript">
+	function addEmail() {
+		$('#add-email-link').css('display', 'none');
+		$('#add-email').css('display', 'block');
+		$('#email-field').focus();
+	}
+	function cancelEmail() {
+		$('#add-email').css('display', 'none');
+		$('#add-email-link').css('display', 'inline');
+	}
+	function removeEmail(id) {
+		if (confirm("Are you sure you want to remove this email address?")) {
+			$('#'+id+'-remove').submit();
+		}
+	}
+	function resetKey() {
+		if (confirm("This will break anything using your current API key. Are you sure?")) {
+			$('#reset-form').submit();
+		}
+	}
+</script>
 {% endblock %}

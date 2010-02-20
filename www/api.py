@@ -33,6 +33,8 @@ class NotifyHandler(RequestHandler):
     def post(self): 
         hash = self.request.path.split('/')[-1]
         target = Account.all().filter('hash =', hash).get()
+        if not target:
+            target = Account.all().filter('hashes =', hash).get()
         source = Account.all().filter('api_key =', self.request.get('api_key')).get()
         
         channel = Channel.all().filter('target =', target).filter('source =', source).get()
@@ -49,6 +51,8 @@ class NotifyHandler(RequestHandler):
                 if value:
                     setattr(notice, arg, value)
             notice.put()
+            
+            # Increment the counter on the channel to represent number of notices sent
             channel.count += 1
             channel.put()
             
