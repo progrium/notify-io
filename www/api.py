@@ -46,7 +46,7 @@ class NotifyHandler(RequestHandler):
             
         if channel:
             notice = Notification(channel=channel, text=strip_tags(self.request.get('text')), icon=source.source_icon)
-            for arg in ['title', 'link', 'icon', 'sticky']:
+            for arg in ['title', 'link', 'icon', 'sticky', 'tags']:
                 value = strip_tags(self.request.get(arg, None))
                 if value:
                     setattr(notice, arg, value)

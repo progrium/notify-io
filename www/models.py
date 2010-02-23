@@ -197,6 +197,7 @@ class Notification(db.Model):
     link = db.StringProperty()
     icon = db.StringProperty()
     sticky = db.StringProperty()
+    tags = db.StringProperty()
 
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
@@ -228,7 +229,7 @@ class Notification(db.Model):
     
     def to_dict(self):
         o = {'text': self.text.replace('\r\n', '\n')}
-        for arg in ['title', 'link', 'icon', 'sticky']:
+        for arg in ['title', 'link', 'icon', 'sticky', 'tags']:
             value = getattr(self, arg)
             if value:
                 o[arg] = value

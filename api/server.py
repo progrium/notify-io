@@ -98,7 +98,7 @@ class NotifyResource(Resource):
             listeners[hash] = []
         
         notification = {}
-        for arg in ['title', 'text', 'icon', 'link', 'sticky']:
+        for arg in ['title', 'text', 'icon', 'link', 'sticky', 'tags']:
             value = request.args.get(arg, [None])[0]
             if value:
                 notification[arg] = value
