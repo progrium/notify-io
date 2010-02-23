@@ -25,12 +25,13 @@
 	</div>
 </p>
 
-<form method="post">
+
   <h3>Source Settings</h3>
 	<p>
 	API key: <input type="text" value="{{ account.api_key }}" readonly="readonly" onclick="this.select()" size="32" /> <a href="javascript:resetKey()" style="font-size: smaller;">Reset Key</a>
   <form id="reset-form" action="/settings" method="post"><input type="hidden" name="action" value="reset" /></form>
 	</p>
+	<form method="post">
   <p>
   <input type="checkbox" value="true" name="source_enabled" {% if account.source_enabled %}checked="checked"{% endif %}/> Yes, I want to send notifications with this account<br />
   <p style="margin-left: 10px;">
