@@ -1,3 +1,4 @@
+.DS_Store
 www/clients/*
 **/*.pyc
 **/.DS_Store
