@@ -11,7 +11,7 @@
 			<td valign="top">
 				{% if notice.title %}<strong>{{ notice.title|striptags }}</strong><br />{% endif %} 
 				{{ notice.text|striptags }} {% if notice.link %}<a href="{{ notice.link }}" target="_blank" title="Follow link"><img src="/static/icons/link.png" style="position: absolute;"/></a>{% endif %}<br />
-				{% if notice.tags %}<small>{{ notice.tags}}</small><br /> {% endif %}
+				{% if notice.tags %}<span style="font-size: x-small;">Tags: {{ notice.tags}}</span><br /> {% endif %}
 				<small style="color: #555;"><a href="/sources/{{notice.source.hash}}" style="color: #555;">{{ notice.source.source_name }}</a> {{ notice.created|timesince|shortago }} </small>
 				
 				<form action="/history" method="post" style="display: inline;">
