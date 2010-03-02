@@ -140,7 +140,6 @@ class ListenResource(Resource):
         listeners[hash].append(request)
         
         request.setHeader('Content-Type', 'application/json')
-        request.setHeader('Transfer-Encoding', 'chunked')
         request.notifyFinish().addBoth(self._finished, hash, request)
         
         return server.NOT_DONE_YET
