@@ -151,11 +151,13 @@ class ListenResource(Resource):
         request.write("%s\n" % message)
 
 log.startLogging(sys.stdout)
-reactor.listenTCP(PORT, Site(ContainerResource(
+site = Site(ContainerResource(
     v1=ContainerResource(
         listen=ListenResource(),
         notify=NotifyResource(),
         replay=ReplayResource(),
     )
-)))
+))
+reactor.listenTCP(PORT, site)
+#reactor.listenTCP(80, site, interface='174.143.203.167')
 reactor.run()
