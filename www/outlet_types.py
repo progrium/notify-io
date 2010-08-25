@@ -43,7 +43,7 @@ class Prowl(BaseOutlet):
             'event': notice.title or '',
             'description': notice.text,
 	    }
-		data = urllib.urlencode(data)
+		data = urllib.urlencode(utf8encode(data))
 		urlfetch.fetch("https://prowl.weks.net/publicapi/add/", method='POST', payload=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
 		return None
 		
@@ -137,6 +137,9 @@ class Webhook(BaseOutlet):
         url = notice.channel.outlet.get_param('url')
         urlfetch.fetch(url, method='POST', payload=urllib.urlencode(notice.to_dict()))
         return None
+
+def utf8encode(source):
+    return dict([(k, v.encode('utf-8') if v else None) for (k, v) in source.items()])
 
 _globals = globals()
 def get(outlet_name):
