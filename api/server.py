@@ -4,7 +4,7 @@ from twisted.python import log
 from twisted.internet import reactor
 from twisted.web.server import Site
 from twisted.internet.defer import DeferredQueue
-import sys, simplejson, urllib
+import sys, simplejson, urllib, base64, os
 
 try:
     if sys.argv[1] == '--dev':
@@ -17,6 +17,12 @@ except IndexError:
     PORT = 8003
 
 listeners = {} # Key: hash, Value: list of requests listening
+
+def push_to_realtime(hash, message):
+    client.getPage(url='https://AC43b69b055a6b5299cd211a53d82047bb.twiliort.com/v1/listen/%s' % hash, 
+        method='POST', postdata=message, headers={
+            "Content-Type": "application/json", 
+            "Authorization": 'Basic %s' % base64.encodestring('%s:x' % os.environ['AUTH_TOKEN'])[:-1]})
 
 class Queue(DeferredQueue):
     def __init__(self, handler=None):
@@ -66,6 +72,7 @@ class ReplayResource(Resource):
             if ':' in page_contents:
                 hashes, message = page_contents.split(':', 1)
                 for hash in hashes.split(','):
+                    push_to_realtime(hash, message.strip())
                     for listener in listeners[hash]:
                         listener.queue.put(message.strip())
             request.write("OK\n")
@@ -115,6 +122,7 @@ class NotifyResource(Resource):
             if ':' in page_contents:
                 hashes, message = page_contents.split(':', 1)
                 for hash in hashes.split(','):
+                    push_to_realtime(hash, message.strip())
                     for listener in listeners[hash]:
                         listener.queue.put(message.strip())
             request.write("OK\n")
