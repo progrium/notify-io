@@ -43,6 +43,7 @@ class NotifyHandler(RequestHandler):
             channel = Channel(target=target, source=source, outlet=target.get_default_outlet())
             channel.put()
             approval_notice = channel.get_approval_notice()
+            channel.send_activation_email()
             
         if channel:
             notice = Notification(channel=channel, text=strip_tags(self.request.get('text')), icon=source.source_icon)

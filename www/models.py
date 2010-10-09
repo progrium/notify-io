@@ -184,8 +184,17 @@ class Channel(db.Model):
         notice.icon = self.source.source_icon
         notice.sticky = 'true'
         return notice
-        
 
+    def send_activation_email(self):
+        if self.status == 'pending':
+            mail.send_mail(
+                sender="Notify.io <no-reply@notify-io.appspotmail.com>",
+                to="%s@gmail.com" % self.target.user,
+                subject="Approve a channel",
+                body="Hello,\n\nClick on this link to approve this channel:\n http://%s/sources" % WWW_HOST)
+        else:
+            raise Exception("Channel not pending")
+ 
 class Notification(db.Model):
     hash = db.StringProperty()
     channel = db.ReferenceProperty(Channel)
