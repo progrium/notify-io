@@ -1,4 +1,5 @@
 .DS_Store
+www/keys.py
 www/clients/*
 **/*.pyc
 **/.DS_Store
