@@ -3,6 +3,15 @@ from google.appengine.api import mail, xmpp, urlfetch
 import urllib
 import logging
 
+import keys
+import base64
+def push_to_realtime(hash, message):
+    #urlfetch.make_fetch_call(urlfetch.create_rpc(),'https://AC43b69b055a6b5299cd211a53d82047bb.twiliort.com/~1/listen/%s' % hash, 
+    urlfetch.fetch('https://AC43b69b055a6b5299cd211a53d82047bb.twiliort.com/~1/listen/%s' % hash, 
+        method='POST', payload=message, headers={
+            "Content-Type": "application/json", 
+            "Authorization": 'Basic %s' % base64.encodestring('%s:x' % keys.auth_token)[:-1]})
+
 class BaseOutlet(object):
     name = None
     push = True
@@ -59,7 +68,7 @@ class DesktopNotifier(BaseOutlet):
     
     @classmethod
     def dispatch(cls, notice):
-        return ":".join([notice.channel.outlet.hash, notice.to_json()])
+        push_to_realtime(notice.channel.outlet.hash, notice.to_json())
 
 
 

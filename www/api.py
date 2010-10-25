@@ -1,11 +1,12 @@
 import wsgiref.handlers
 import hashlib, time, os, re
 import base64
+import logging
 
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.api import urlfetch
+from google.appengine.api import urlfetch, memcache
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson
@@ -18,20 +19,21 @@ def strip_tags(value):
     return re.sub(r'<[^>]*?>', '', value or '')
 
 class ReplayHandler(RequestHandler):
-    def post(self): 
-        notice_hash = self.request.path.split('/')[-1]
-        notice = Notification.all().filter('hash =', notice_hash).get()
+    def post(self, hash): 
+        hash = hash.lower()
+        notice = Notification.all().filter('hash =', hash).get()
         target = Account.all().filter('api_key =', self.request.get('api_key')).get()
         channel = notice.channel
         if notice and channel.status == 'enabled' and channel.target.key() == target.key():
-            self.response.out.write(notice.dispatch())
+            notice.dispatch()
+            self.response.out.write("OK\n")
         else:
             self.error(404)
 
 
 class NotifyHandler(RequestHandler):
-    def post(self): 
-        hash = self.request.path.split('/')[-1]
+    def post(self, hash): 
+        hash = hash.lower()
         target = Account.all().filter('hash =', hash).get()
         if not target:
             target = Account.all().filter('hashes =', hash).get()
@@ -58,12 +60,14 @@ class NotifyHandler(RequestHandler):
             channel.put()
             
             if channel.status == 'enabled':
-                self.response.out.write(notice.dispatch())
+                notice.dispatch()
+                self.response.out.write("OK\n")
                 
             elif channel.status == 'pending':
                 self.response.set_status(202)
                 if approval_notice:
-                    self.response.out.write(":".join([channel.outlet.hash, approval_notice.to_json()]))
+                    approval_notice.dispatch()
+                    self.response.out.write("OK\n")
                 else:
                     self.response.out.write("202 Pending approval")
             elif channel.status == 'disabled':
@@ -95,10 +99,23 @@ class HistoryHandler(webapp.RequestHandler):
             self.response.headers['WWW-Authenticate'] = 'Basic realm="%s"' % 'Notify.io'
             self.error(401)
 
+class ListenHandler(webapp.RequestHandler):
+    def get(self, hash):
+        if not 'Nio/1.0 CFNetwork' in self.request.headers['user-agent']:
+            self.redirect('http://listen.notify.io/~1/listen/%s' % hash)
+        else:
+            message = memcache.get(self.request.remote_addr)
+            if not message:
+                memcache.set(self.request.remote_addr, True, time=300)
+                self.response.out.write('{"text": "Click here to upgrade your client", "title": "This client is now deprecated", "link": "http://code.google.com/p/notify-io/downloads/detail?name=DesktopNotifier.dmg"}\n')
+            else:
+                time.sleep(20)
+
 def main():
     application = webapp.WSGIApplication([
-        ('/api/notify.*', NotifyHandler), 
-        ('/api/replay.*', ReplayHandler), 
+        ('/v1/notify/(.*)', NotifyHandler), 
+        ('/v1/replay/(.*)', ReplayHandler), 
+        ('/v1/listen/(.*)', ListenHandler),
         ('/api/history.json', HistoryHandler),
         ], debug=True)
     wsgiref.handlers.CGIHandler().run(application)

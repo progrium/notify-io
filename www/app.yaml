@@ -16,5 +16,7 @@ handlers:
   static_dir: static
 - url: /api.*
   script: api.py
+- url: /v1.*
+  script: api.py
 - url: .*
   script: main.py
