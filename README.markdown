@@ -14,10 +14,10 @@ If your shell can't find the `dev_appserver.py` command, you need to [create a s
 
 Alternatively, if you don't want to use the shell you can use the App Engine Launcher.
 
-*_Note_*: When running in development mode, these outlets will not work:
+**Note**: When running in development mode, these outlets will not work:
 
 * Desktop Notifier
-* Email (unless you [set it up](http://code.google.com/appengine/docs/python/tools/devserver.html#Using_Mail)
+* Email (unless you [set it up](http://code.google.com/appengine/docs/python/tools/devserver.html#Using_Mail))
 * any outlet that requires keys
 
 
