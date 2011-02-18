@@ -2,9 +2,13 @@ from django.utils import simplejson
 from google.appengine.api import mail, xmpp, urlfetch
 import urllib
 import logging
-
-import keys
 import base64
+
+try:
+  import keys
+except ImportError:
+  keys = None
+
 def push_to_realtime(hash, message):
     #urlfetch.make_fetch_call(urlfetch.create_rpc(),'https://AC43b69b055a6b5299cd211a53d82047bb.twiliort.com/~1/listen/%s' % hash, 
     urlfetch.fetch('https://AC43b69b055a6b5299cd211a53d82047bb.twiliort.com/~1/listen/%s' % hash, 
