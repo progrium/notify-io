@@ -160,20 +160,22 @@ def redirect_to(path):
             self.redirect(path)
     return redirector
 
+def application():
+  return webapp.WSGIApplication([
+    ('/', MainHandler), 
+    ('/getstarted', GetStartedHandler),
+    ('/sources/available', SourcesAvailableHandler),
+    ('/settings.*', SettingsHandler),
+    ('/history', HistoryHandler),
+    ('/sources.*', SourcesHandler),
+    ('/outlets.*', OutletsHandler),
+    ('/dashboard/history', redirect_to('/history')),
+    ('/dashboard/settings', redirect_to('/settings')),
+    ('/dashboard/sources', redirect_to('/sources')),
+    ], debug=True)
+
 def main():
-    application = webapp.WSGIApplication([
-        ('/', MainHandler), 
-        ('/getstarted', GetStartedHandler),
-        ('/sources/available', SourcesAvailableHandler),
-        ('/settings.*', SettingsHandler),
-        ('/history', HistoryHandler),
-        ('/sources.*', SourcesHandler),
-        ('/outlets.*', OutletsHandler),
-        ('/dashboard/history', redirect_to('/history')),
-        ('/dashboard/settings', redirect_to('/settings')),
-        ('/dashboard/sources', redirect_to('/sources')),
-        ], debug=True)
-    wsgiref.handlers.CGIHandler().run(application)
+   wsgiref.handlers.CGIHandler().run(application())
 
 
 if __name__ == '__main__':
