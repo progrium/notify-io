@@ -111,15 +111,17 @@ class ListenHandler(webapp.RequestHandler):
             else:
                 time.sleep(20)
 
-def main():
-    application = webapp.WSGIApplication([
+def application():
+   return webapp.WSGIApplication([
         ('/v1/notify/(.*)', NotifyHandler), 
         ('/v1/replay/(.*)', ReplayHandler), 
         ('/v1/listen/(.*)', ListenHandler),
         ('/api/history.json', HistoryHandler),
         ], debug=True)
-    wsgiref.handlers.CGIHandler().run(application)
 
+
+def main():
+  wsgiref.handlers.CGIHandler().run(application())
 
 if __name__ == '__main__':
     main()
