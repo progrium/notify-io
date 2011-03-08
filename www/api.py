@@ -111,12 +111,25 @@ class ListenHandler(webapp.RequestHandler):
             else:
                 time.sleep(20)
 
+class VerifyHandler(webapp.RequestHandler):
+  def get(self, hash):
+    if Account.all().filter('api_key =', self.request.get('api_key')).get():
+      if (Account.all().filter('hash =', hash.lower()).get()) or (Account.all().filter('hashes =', hash.lower()).get()):
+        self.response.out.write("200 OK")
+      else:
+        self.error(404)
+        self.response.out.write("404 User not found")
+    else:
+      self.error(403)
+      self.response.out.write("403 Missing required parameters")
+
 def application():
    return webapp.WSGIApplication([
-        ('/v1/notify/(.*)', NotifyHandler), 
-        ('/v1/replay/(.*)', ReplayHandler), 
+        ('/v1/notify/(.*)', NotifyHandler),
+        ('/v1/replay/(.*)', ReplayHandler),
         ('/v1/listen/(.*)', ListenHandler),
-        ('/api/history.json', HistoryHandler),
+        ('/v1/users/(.*)', VerifyHandler),
+        ('/api/history.json', HistoryHandler)
         ], debug=True)
 
 
