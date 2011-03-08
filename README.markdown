@@ -20,4 +20,17 @@ Alternatively, if you don't want to use the shell you can use the App Engine Lau
 * Email (unless you [set it up](http://code.google.com/appengine/docs/python/tools/devserver.html#Using_Mail))
 * any outlet that requires keys
 
+Running tests
+---
+You'll need these packages:
+
+* [nose](http://somethingaboutorange.com/mrl/projects/nose/1.0.0/)
+* [NoseGAE](http://farmdev.com/projects/nosegae/)
+* [WebTest](http://pythonpaste.org/webtest/)
+
+Run the test suite with:
+
+    nosetests --with-gae
+
+or edit your .noserc accordingly. Make sure you're in the www directory.
 
