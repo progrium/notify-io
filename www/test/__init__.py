@@ -1,4 +1,4 @@
-from models import Account
+from models import Account, Email, Outlet, Channel, Notification
 
 def setup():
   import os
@@ -10,7 +10,7 @@ def setup():
   os.environ['USER_ID'] = ''
 
 def reset_datastore():
-  for klass in [Account]:
+  for klass in [Account, Email, Outlet, Channel, Notification]:
     for instance in klass.all():
       try:
         klass.delete(instance)
