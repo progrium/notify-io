@@ -62,6 +62,30 @@ class Prowl(BaseOutlet):
 		
 		
 
+class NMA(BaseOutlet):
+	name = "NotifyMyAndroid"
+	fields = ['api_key']
+	help = 'Get your API key at <a href="http://nma.usk.bz/">NotifyMyAndroid website</a>.'
+	
+	@classmethod
+	def default_name(cls, params):
+		return "An Android with NotifyMyAndroid" 
+
+	@classmethod
+	def dispatch(cls, notice):
+		api_key = notice.channel.outlet.get_param('api_key')
+		data = {
+		    'apikey': api_key,
+            'application': notice.source.source_name,
+            'event': notice.title or '',
+            'description': notice.text,
+	    }
+		data = urllib.urlencode(utf8encode(data))
+		urlfetch.fetch("https://nma.usk.bz/publicapi/notify", method='POST', payload=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+		return None
+		
+		
+
 class DesktopNotifier(BaseOutlet):
     name = "Desktop Notifier"
     push = False
@@ -158,5 +182,5 @@ _globals = globals()
 def get(outlet_name):
     return _globals[outlet_name]
 
-available = ['DesktopNotifier', 'Email', 'Jabber', 'SMS', 'Webhook', 'Prowl']
+available = ['DesktopNotifier', 'Email', 'Jabber', 'SMS', 'Webhook', 'Prowl', 'NotifyMyAndroid']
 all = [get(o) for o in available]
