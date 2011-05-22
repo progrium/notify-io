@@ -2,7 +2,7 @@ Notify.io
 ===
 Notify.io is the open notification platform for the web. 
 
-These notes are for people that are interested in contributing or learning about about Notify.io works. If you just want to use it to get notifications, sign up at [Notify.io](http://notify.op).
+These notes are for people that are interested in contributing or learning about about Notify.io works. If you just want to use it to get notifications, sign up at [Notify.io](http://notify.io).
 
 Getting Started
 ---
