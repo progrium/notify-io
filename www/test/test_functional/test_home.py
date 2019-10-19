@@ -3,6 +3,6 @@ from main import application
 
 app = TestApp(application())
 
-def test_foo():
-  app.get("/")
 
+def test_foo():
+    app.get("/")
